@@ -1,5 +1,5 @@
 export async function loginRole(role) {
-  const res = await fetch('/api/login-role', {
+  const res = await fetch('api/login-role', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ role }),
@@ -12,7 +12,7 @@ export async function loginRole(role) {
 }
 
 export async function fetchDashboard(token) {
-  const res = await fetch('/api/dashboard', {
+  const res = await fetch('api/dashboard', {
     headers: { Authorization: `Bearer ${token}` },
   })
   if (!res.ok) throw new Error('Session expired')
@@ -20,7 +20,7 @@ export async function fetchDashboard(token) {
 }
 
 export async function updateProposal(token, id, patch) {
-  const res = await fetch(`/api/proposals/${id}`, {
+  const res = await fetch(`api/proposals/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ export async function updateProposal(token, id, patch) {
 }
 
 export async function logout(token) {
-  await fetch('/api/logout', {
+  await fetch('api/logout', {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
   }).catch(() => {})
