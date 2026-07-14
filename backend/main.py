@@ -1,4 +1,4 @@
-"""Demo backend: no authentication — pick a role, get that role's dashboard.
+"""Insights Platform demo backend — single Client Advisor view.
 
 Run:  uvicorn main:app --reload --port 8000
 """
@@ -10,9 +10,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from data import ADVISORS, CLIENTS, PROPOSAL_STATUSES, PROPOSALS
+from data import (ACTIONS, ADVISOR, CLIENTS, ENGAGEMENT, FINANCIALS, NEWS,
+                  OPPORTUNITIES, OPPORTUNITY_STATUSES)
 
-app = FastAPI(title="Personal View Demo API")
+app = FastAPI(title="Insights Platform Demo API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,130 +22,136 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# The Client Advisor view shows this advisor's book.
-DEFAULT_ADVISOR_ID = "CA-001"
 
-VIEW_USERS = {
-    "Client Advisor": ADVISORS[DEFAULT_ADVISOR_ID],
-    "Specialist": "Thomas Green",
-    "Management": "Julia Weiss",
-}
-
-
-class ProposalUpdate(BaseModel):
+class ActionUpdate(BaseModel):
     status: Optional[str] = None
-    expected_volume_musd: Optional[float] = None
-    comment: Optional[str] = None
 
 
-def client_by_id(cid: int):
-    return next(c for c in CLIENTS if c["id"] == cid)
+class OpportunityUpdate(BaseModel):
+    status: Optional[str] = None
 
 
-ROLE_SLUGS = {
-    "advisor": "Client Advisor",
-    "specialist": "Specialist",
-    "management": "Management",
-}
+def client_map():
+    return {c["id"]: c for c in CLIENTS}
 
 
-@app.get("/api/dashboard")
-def dashboard(role: str):
-    role = ROLE_SLUGS.get(role, role)
-    if role not in VIEW_USERS:
-        raise HTTPException(status_code=400, detail="Unknown role")
-    name = VIEW_USERS[role]
+def with_client(items):
+    cm = client_map()
+    return [{**i, "client_name": cm[i["client_id"]]["name"]} for i in items]
 
-    if role == "Client Advisor":
-        my = [c for c in CLIENTS if c["advisor_id"] == DEFAULT_ADVISOR_ID]
-        return {
-            "role": role,
-            "name": name,
-            "clients": my,
-            "kpis": {
-                "total_clients": len(my),
-                "invested_assets_musd": round(sum(c["invested_assets_musd"] for c in my), 1),
-                "revenue_ytd_kusd": sum(c["revenue_ytd_kusd"] for c in my),
-                "nnm_ytd_musd": round(sum(c["nnm_ytd_musd"] for c in my), 1),
-                "reviews_pending": sum(1 for c in my if c["needs_review"]),
-            },
-        }
 
-    if role == "Management":
-        by_advisor = {}
-        for c in CLIENTS:
-            a = by_advisor.setdefault(c["advisor_id"], {
-                "advisor_id": c["advisor_id"], "clients": 0,
-                "invested_assets_musd": 0.0, "revenue_ytd_kusd": 0,
-                "nnm_ytd_musd": 0.0, "reviews_pending": 0,
-            })
-            a["clients"] += 1
-            a["invested_assets_musd"] = round(a["invested_assets_musd"] + c["invested_assets_musd"], 1)
-            a["revenue_ytd_kusd"] += c["revenue_ytd_kusd"]
-            a["nnm_ytd_musd"] = round(a["nnm_ytd_musd"] + c["nnm_ytd_musd"], 1)
-            a["reviews_pending"] += 1 if c["needs_review"] else 0
-        for a in by_advisor.values():
-            a["advisor_name"] = ADVISORS.get(a["advisor_id"], a["advisor_id"])
-
-        by_segment = {}
-        for c in CLIENTS:
-            s = by_segment.setdefault(c["segment"], {"segment": c["segment"], "clients": 0, "invested_assets_musd": 0.0, "revenue_ytd_kusd": 0})
-            s["clients"] += 1
-            s["invested_assets_musd"] = round(s["invested_assets_musd"] + c["invested_assets_musd"], 1)
-            s["revenue_ytd_kusd"] += c["revenue_ytd_kusd"]
-
-        won = [p for p in PROPOSALS if p["status"] == "Won"]
-        open_props = [p for p in PROPOSALS if p["status"] in ("New", "In progress", "Proposed")]
-        return {
-            "role": role,
-            "name": name,
-            "advisors": list(by_advisor.values()),
-            "segments": list(by_segment.values()),
-            "kpis": {
-                "total_clients": len(CLIENTS),
-                "invested_assets_musd": round(sum(c["invested_assets_musd"] for c in CLIENTS), 1),
-                "revenue_ytd_kusd": sum(c["revenue_ytd_kusd"] for c in CLIENTS),
-                "nnm_ytd_musd": round(sum(c["nnm_ytd_musd"] for c in CLIENTS), 1),
-                "reviews_pending": sum(1 for c in CLIENTS if c["needs_review"]),
-                "open_proposals": len(open_props),
-                "pipeline_musd": round(sum(p["expected_volume_musd"] for p in open_props), 1),
-                "won_proposals": len(won),
-            },
-        }
-
-    # Specialist (Sales)
-    props = [{**p, "client_name": client_by_id(p["client_id"])["name"],
-              "advisor_id": client_by_id(p["client_id"])["advisor_id"],
-              "segment": client_by_id(p["client_id"])["segment"]} for p in PROPOSALS]
-    open_props = [p for p in props if p["status"] in ("New", "In progress", "Proposed")]
+@app.get("/api/home")
+def home():
+    open_actions = [a for a in ACTIONS if a["status"] == "Open"]
+    completed = [a for a in ACTIONS if a["status"] == "Completed"]
+    total = len(ACTIONS)
     return {
-        "role": role,
-        "name": name,
-        "proposals": props,
-        "statuses": PROPOSAL_STATUSES,
+        "advisor": ADVISOR,
+        "actions": with_client(ACTIONS),
+        "action_metrics": {
+            "open": len(open_actions),
+            "completed": len(completed),
+            "completion_rate_pct": round(100 * len(completed) / total) if total else 0,
+        },
+        "news": with_client(NEWS),
         "kpis": {
-            "open_proposals": len(open_props),
-            "pipeline_musd": round(sum(p["expected_volume_musd"] for p in open_props), 1),
-            "won": sum(1 for p in props if p["status"] == "Won"),
-            "clients_covered": len({p["client_id"] for p in props}),
+            "clients": len(CLIENTS),
+            "aum_musd": FINANCIALS["tiles"][0]["value_musd"],
+            "open_opportunities": sum(1 for o in OPPORTUNITIES if o["status"] != "Closed"),
+            "engagement_score": ENGAGEMENT["tiles"][0]["value"],
         },
     }
 
 
-@app.patch("/api/proposals/{proposal_id}")
-def update_proposal(proposal_id: int, update: ProposalUpdate):
-    prop = next((p for p in PROPOSALS if p["id"] == proposal_id), None)
-    if not prop:
-        raise HTTPException(status_code=404, detail="Proposal not found")
+@app.get("/api/financials")
+def financials():
+    return {
+        "tiles": FINANCIALS["tiles"],
+        "allocation": FINANCIALS["allocation"],
+        "liabilities": FINANCIALS["liabilities"],
+        "clients": [
+            {
+                "id": c["id"], "name": c["name"], "segment": c["segment"],
+                "aum_musd": c["aum_musd"], "share_of_wallet_pct": c["share_of_wallet_pct"],
+                "revenue_ytd_kusd": c["revenue_ytd_kusd"], "nnm_ytd_musd": c["nnm_ytd_musd"],
+                "loans_musd": c["liabilities"]["Loans"], "mortgages_musd": c["liabilities"]["Mortgages"],
+            }
+            for c in CLIENTS
+        ],
+    }
+
+
+@app.get("/api/engagement")
+def engagement():
+    cm = client_map()
+    clients = [
+        {
+            "id": c["id"], "name": c["name"],
+            "engagement_score": c["engagement_score"],
+            "last_interaction_days": c["last_interaction_days"],
+            "needs_attention": c["last_interaction_days"] >= 90,
+        }
+        for c in sorted(CLIENTS, key=lambda x: -x["last_interaction_days"])
+    ]
+    return {
+        "tiles": ENGAGEMENT["tiles"],
+        "clients": clients,
+        "interactions": with_client(ENGAGEMENT["interactions"]),
+    }
+
+
+@app.get("/api/opportunities")
+def opportunities():
+    cm = client_map()
+    items = [{**o, "client_name": cm[o["client_id"]]["name"],
+              "client_tags": cm[o["client_id"]]["tags"]} for o in OPPORTUNITIES]
+    open_items = [o for o in items if o["status"] != "Closed"]
+    return {
+        "statuses": OPPORTUNITY_STATUSES,
+        "opportunities": items,
+        "kpis": {
+            "open": len(open_items),
+            "pipeline_musd": round(sum(o["estimated_value_musd"] for o in open_items), 1),
+            "avg_potential": round(sum(o["potential_score"] for o in open_items) / len(open_items), 1) if open_items else 0,
+        },
+    }
+
+
+@app.get("/api/clients/{client_id}")
+def client_one_pager(client_id: int):
+    c = client_map().get(client_id)
+    if not c:
+        raise HTTPException(status_code=404, detail="Client not found")
+    return {
+        **c,
+        "opportunities": [o for o in OPPORTUNITIES if o["client_id"] == client_id],
+        "interactions": [i for i in ENGAGEMENT["interactions"] if i["client_id"] == client_id],
+        "news": [n for n in NEWS if n["client_id"] == client_id],
+    }
+
+
+@app.patch("/api/actions/{action_id}")
+def update_action(action_id: int, update: ActionUpdate):
+    action = next((a for a in ACTIONS if a["id"] == action_id), None)
+    if not action:
+        raise HTTPException(status_code=404, detail="Action not found")
     if update.status is not None:
-        if update.status not in PROPOSAL_STATUSES:
+        if update.status not in ("Open", "Completed"):
             raise HTTPException(status_code=400, detail="Invalid status")
-        prop["status"] = update.status
-    if update.expected_volume_musd is not None:
-        prop["expected_volume_musd"] = update.expected_volume_musd
-    if update.comment is not None:
-        prop["comment"] = update.comment
-    return prop
+        action["status"] = update.status
+    return action
+
+
+@app.patch("/api/opportunities/{opp_id}")
+def update_opportunity(opp_id: int, update: OpportunityUpdate):
+    opp = next((o for o in OPPORTUNITIES if o["id"] == opp_id), None)
+    if not opp:
+        raise HTTPException(status_code=404, detail="Opportunity not found")
+    if update.status is not None:
+        if update.status not in OPPORTUNITY_STATUSES:
+            raise HTTPException(status_code=400, detail="Invalid status")
+        opp["status"] = update.status
+    return opp
 
 
 # Serve the built frontend (frontend/dist) if it exists — single-port deploy.

@@ -1,22 +1,22 @@
-// Slugs avoid spaces in the query string — some proxies re-encode "%20" to "%2520".
-const ROLE_SLUGS = {
-  'Client Advisor': 'advisor',
-  'Specialist': 'specialist',
-  'Management': 'management',
-}
-
-export async function fetchDashboard(role) {
-  const res = await fetch(`api/dashboard?role=${ROLE_SLUGS[role] || role}`)
-  if (!res.ok) throw new Error('Failed to load dashboard')
+async function get(path) {
+  const res = await fetch(path)
+  if (!res.ok) throw new Error('Failed to load data')
   return res.json()
 }
 
-export async function updateProposal(id, patch) {
-  const res = await fetch(`api/proposals/${id}`, {
+async function patch(path, body) {
+  const res = await fetch(path, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(patch),
+    body: JSON.stringify(body),
   })
   if (!res.ok) throw new Error('Update failed')
   return res.json()
 }
+
+export const fetchHome = () => get('api/home')
+export const fetchFinancials = () => get('api/financials')
+export const fetchEngagement = () => get('api/engagement')
+export const fetchOpportunities = () => get('api/opportunities')
+export const updateAction = (id, body) => patch(`api/actions/${id}`, body)
+export const updateOpportunity = (id, body) => patch(`api/opportunities/${id}`, body)

@@ -1,38 +1,49 @@
-import { useEffect, useState } from 'react'
-import RolePicker from './Login.jsx'
-import Dashboard from './Dashboard.jsx'
-import { fetchDashboard } from './api.js'
+import { useState } from 'react'
+import Home from './pages/Home.jsx'
+import Financials from './pages/Financials.jsx'
+import Engagement from './pages/Engagement.jsx'
+import Opportunities from './pages/Opportunities.jsx'
+
+const PAGES = ['Home', 'My Financials', 'My Engagement', 'My Opportunities']
 
 export default function App() {
-  const [role, setRole] = useState(null)
-  const [data, setData] = useState(null)
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    if (!role) return
-    setData(null)
-    setError('')
-    fetchDashboard(role)
-      .then(setData)
-      .catch((e) => setError(e.message))
-  }, [role])
-
-  if (!role) return <RolePicker onPick={setRole} />
+  const [page, setPage] = useState('Home')
 
   return (
     <div className="app">
       <header className="topbar">
-        <div className="brand">Personal View</div>
+        <div className="brand">
+          <span className="brand-mark" />
+          <span className="brand-name">Insights Platform</span>
+        </div>
+        <nav className="mainnav">
+          {PAGES.map((p) => (
+            <button
+              key={p}
+              className={`nav-link ${p === page ? 'nav-link-active' : ''}`}
+              onClick={() => setPage(p)}
+            >
+              {p}
+            </button>
+          ))}
+        </nav>
         <div className="userbox">
-          {data && <span>{data.name}</span>}
-          <span className="role-badge">{role}</span>
-          <button className="btn-secondary" onClick={() => setRole(null)}>
-            Switch view
-          </button>
+          <span className="avatar">JM</span>
         </div>
       </header>
-      {error && <p className="error">{error}</p>}
-      {data ? <Dashboard data={data} /> : !error && <p className="loading">Loading…</p>}
+
+      {page !== 'Home' && (
+        <div className="breadcrumbs">
+          <button className="crumb" onClick={() => setPage('Home')}>Home</button>
+          <span className="crumb-sep">›</span>
+          <span className="crumb-current">{page}</span>
+        </div>
+      )}
+
+      {page === 'Home' && <Home onNavigate={setPage} />}
+      {page === 'My Financials' && <Financials />}
+      {page === 'My Engagement' && <Engagement />}
+      {page === 'My Opportunities' && <Opportunities />}
     </div>
   )
 }

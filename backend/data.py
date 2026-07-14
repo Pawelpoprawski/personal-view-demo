@@ -1,28 +1,156 @@
-"""Dummy data for the demo app. All names and numbers are fictional."""
+"""Dummy data for the Insights Platform demo. All people, clients and numbers are fictional."""
 
-ADVISORS = {
-    "CA-001": "Anna Carter",
-    "CA-002": "Mark Novak",
-}
+ADVISOR = {"name": "Josh", "full_name": "Josh Miller", "desk": "Wealth Management, Zurich"}
 
 CLIENTS = [
-    {"id": 1, "name": "Alpha Holdings",    "advisor_id": "CA-001", "segment": "UHNW", "domicile": "CH", "invested_assets_musd": 125.4, "cash_musd": 12.1, "revenue_ytd_kusd": 842,  "nnm_ytd_musd": 8.4,  "ytd_return_pct": 6.2, "risk_profile": "Balanced",     "mandate": "Advisory",      "needs_review": True,  "open_products": ["Lombard Loan", "FX Hedge"]},
-    {"id": 2, "name": "Beta Family Office","advisor_id": "CA-001", "segment": "UHNW", "domicile": "DE", "invested_assets_musd": 310.0, "cash_musd": 25.7, "revenue_ytd_kusd": 1930, "nnm_ytd_musd": -4.2, "ytd_return_pct": 4.8, "risk_profile": "Conservative", "mandate": "Discretionary", "needs_review": False, "open_products": ["Discretionary Mandate"]},
-    {"id": 3, "name": "Gamma Ventures",    "advisor_id": "CA-001", "segment": "HNW",  "domicile": "PL", "invested_assets_musd": 42.7,  "cash_musd": 3.9,  "revenue_ytd_kusd": 388,  "nnm_ytd_musd": 5.1,  "ytd_return_pct": 9.1, "risk_profile": "Aggressive",   "mandate": "Advisory",      "needs_review": True,  "open_products": ["Structured Note", "Private Equity"]},
-    {"id": 4, "name": "Delta Trust",       "advisor_id": "CA-002", "segment": "HNW",  "domicile": "CH", "invested_assets_musd": 58.3,  "cash_musd": 6.4,  "revenue_ytd_kusd": 421,  "nnm_ytd_musd": 2.0,  "ytd_return_pct": 3.5, "risk_profile": "Balanced",     "mandate": "Advisory",      "needs_review": False, "open_products": ["Advisory Mandate"]},
-    {"id": 5, "name": "Epsilon Capital",   "advisor_id": "CA-002", "segment": "UHNW", "domicile": "UK", "invested_assets_musd": 201.9, "cash_musd": 18.3, "revenue_ytd_kusd": 1544, "nnm_ytd_musd": 11.9, "ytd_return_pct": 7.7, "risk_profile": "Aggressive",   "mandate": "Discretionary", "needs_review": True,  "open_products": ["Lombard Loan", "Structured Note"]},
-    {"id": 6, "name": "Zeta Foundation",   "advisor_id": "CA-002", "segment": "HNW",  "domicile": "AT", "invested_assets_musd": 19.6,  "cash_musd": 1.2,  "revenue_ytd_kusd": 96,   "nnm_ytd_musd": 0.4,  "ytd_return_pct": 2.1, "risk_profile": "Conservative", "mandate": "Execution only", "needs_review": False, "open_products": []},
+    {
+        "id": 1, "name": "John Smith", "segment": "UHNW",
+        "booking_location": "Zurich", "domicile": "CH",
+        "aum_musd": 182.0, "share_of_wallet_pct": 34,
+        "revenue_ytd_kusd": 1240, "nnm_ytd_musd": 7.9,
+        "engagement_score": 7, "last_interaction_days": 12,
+        "tags": ["Entrepreneur", "Technology / AI Interest", "Growth Priority"],
+        "allocation": {"Equities": 42, "Fixed Income": 28, "Alternatives": 18, "Cash": 12},
+        "liabilities": {"Loans": 24.0, "Mortgages": 8.5},
+    },
+    {
+        "id": 2, "name": "Mark Johnson", "segment": "UHNW",
+        "booking_location": "Geneva", "domicile": "UK",
+        "aum_musd": 96.5, "share_of_wallet_pct": 21,
+        "revenue_ytd_kusd": 640, "nnm_ytd_musd": -1.2,
+        "engagement_score": 4, "last_interaction_days": 96,
+        "tags": ["Next-Gen Decision Maker", "Selective on Meetings"],
+        "allocation": {"Equities": 55, "Fixed Income": 20, "Alternatives": 10, "Cash": 15},
+        "liabilities": {"Loans": 12.0, "Mortgages": 0.0},
+    },
+    {
+        "id": 3, "name": "James Brown", "segment": "UHNW",
+        "booking_location": "Zurich", "domicile": "DE",
+        "aum_musd": 143.2, "share_of_wallet_pct": 45,
+        "revenue_ytd_kusd": 980, "nnm_ytd_musd": 3.2,
+        "engagement_score": 6, "last_interaction_days": 91,
+        "tags": ["Liquidity Event 2025", "Growth Priority"],
+        "allocation": {"Equities": 35, "Fixed Income": 40, "Alternatives": 15, "Cash": 10},
+        "liabilities": {"Loans": 18.5, "Mortgages": 12.0},
+    },
+    {
+        "id": 4, "name": "Emma Davis", "segment": "HNW",
+        "booking_location": "London", "domicile": "UK",
+        "aum_musd": 58.7, "share_of_wallet_pct": 62,
+        "revenue_ytd_kusd": 410, "nnm_ytd_musd": 1.6,
+        "engagement_score": 9, "last_interaction_days": 5,
+        "tags": ["Entrepreneur", "Next-Gen Decision Maker"],
+        "allocation": {"Equities": 48, "Fixed Income": 22, "Alternatives": 20, "Cash": 10},
+        "liabilities": {"Loans": 6.0, "Mortgages": 4.2},
+    },
+    {
+        "id": 5, "name": "Robert Wilson", "segment": "UHNW",
+        "booking_location": "Zurich", "domicile": "CH",
+        "aum_musd": 42.6, "share_of_wallet_pct": 18,
+        "revenue_ytd_kusd": 230, "nnm_ytd_musd": 1.1,
+        "engagement_score": 5, "last_interaction_days": 34,
+        "tags": ["Technology / AI Interest"],
+        "allocation": {"Equities": 30, "Fixed Income": 35, "Alternatives": 5, "Cash": 30},
+        "liabilities": {"Loans": 0.0, "Mortgages": 2.8},
+    },
 ]
 
-# Sales / product proposals worked on by Specialists.
-# Specialists can edit: status, expected_volume_musd, comment.
-PROPOSALS = [
-    {"id": 1, "client_id": 1, "product": "FX Hedge rollover",        "rationale": "Existing hedge expires in Q3, high FX exposure (USD/CHF).",   "status": "New",         "expected_volume_musd": 15.0, "comment": ""},
-    {"id": 2, "client_id": 3, "product": "Private Equity feeder",    "rationale": "Aggressive profile, low alternatives allocation (4%).",       "status": "In progress", "expected_volume_musd": 5.0,  "comment": "Client asked for track record."},
-    {"id": 3, "client_id": 5, "product": "Structured Note (SMI)",    "rationale": "Note matured last month, proceeds sitting in cash.",          "status": "New",         "expected_volume_musd": 10.0, "comment": ""},
-    {"id": 4, "client_id": 2, "product": "Sustainable bond mandate", "rationale": "Family office requested ESG tilt in last review.",            "status": "Proposed",    "expected_volume_musd": 25.0, "comment": "Waiting for IC approval."},
-    {"id": 5, "client_id": 5, "product": "Lombard limit increase",   "rationale": "Utilisation at 92% of current limit.",                        "status": "New",         "expected_volume_musd": 8.0,  "comment": ""},
-    {"id": 6, "client_id": 4, "product": "Retirement planning",      "rationale": "Beneficial owner turns 60 next year.",                        "status": "Declined",    "expected_volume_musd": 0.0,  "comment": "Client covered externally."},
+# My Financials — book-level tiles (deltas vs. previous quarter)
+FINANCIALS = {
+    "tiles": [
+        {"key": "aum",       "label": "Assets Under Management", "value_musd": 523.0, "delta_musd": 7.9,  "direction": "up"},
+        {"key": "nnm",       "label": "Net New Money",           "value_musd": 12.6,  "delta_musd": 3.2,  "direction": "up"},
+        {"key": "nnl",       "label": "Net New Loans",           "value_musd": 4.4,   "delta_musd": 1.6,  "direction": "up"},
+        {"key": "nnfga",     "label": "Net New Fee Gen Assets",  "value_musd": 8.1,   "delta_musd": -1.2, "direction": "down"},
+        {"key": "revenue",   "label": "Overall Revenue",         "value_musd": 26.5,  "delta_musd": 1.1,  "direction": "up"},
+    ],
+    # book-level asset allocation for the donut
+    "allocation": [
+        {"class": "Equities",     "pct": 44, "musd": 230.1},
+        {"class": "Fixed Income", "pct": 28, "musd": 146.4},
+        {"class": "Alternatives", "pct": 15, "musd": 78.5},
+        {"class": "Cash",         "pct": 13, "musd": 68.0},
+    ],
+    "liabilities": [
+        {"type": "Loans",     "musd": 60.5},
+        {"type": "Mortgages", "musd": 27.5},
+    ],
+}
+
+# My Actions (landing page)
+ACTIONS = [
+    {"id": 1, "title": "Engage with client James Brown", "client_id": 3,
+     "note": "You have not interacted with the client for the last 90 days.",
+     "detail": "Reach out to the client and discuss any recent developments of their portfolio.",
+     "due": "2026-07-18", "status": "Open", "priority": "high"},
+    {"id": 2, "title": "Quarterly portfolio review", "client_id": 1,
+     "note": "Q2 review not yet scheduled.",
+     "detail": "Schedule the Q2 review meeting and prepare the performance summary.",
+     "due": "2026-07-22", "status": "Open", "priority": "medium"},
+    {"id": 3, "title": "Follow up on Lombard proposal", "client_id": 2,
+     "note": "Proposal sent 14 days ago, no response.",
+     "detail": "Call the client to walk through the terms of the Lombard facility.",
+     "due": "2026-07-16", "status": "Open", "priority": "high"},
+    {"id": 4, "title": "Update KYC documentation", "client_id": 5,
+     "note": "Periodic review due this month.",
+     "detail": "Collect the updated source-of-wealth documentation.",
+     "due": "2026-07-30", "status": "Completed", "priority": "low"},
 ]
 
-PROPOSAL_STATUSES = ["New", "In progress", "Proposed", "Won", "Declined"]
+# My Engagement
+ENGAGEMENT = {
+    "tiles": [
+        {"label": "Client Engagement Score", "value": "6.2", "sub": "avg. across book, out of 10"},
+        {"label": "Interactions per Client", "value": "4.8", "sub": "last 90 days"},
+        {"label": "Specialist Engagement", "value": "38%", "sub": "clients met a specialist this year"},
+    ],
+    "interactions": [
+        {"client_id": 4, "type": "Meeting",  "subject": "Succession planning with next generation", "date": "2026-07-09", "with_specialist": True},
+        {"client_id": 1, "type": "Call",     "subject": "Tech sector exposure and AI basket idea",   "date": "2026-07-02", "with_specialist": False},
+        {"client_id": 5, "type": "Email",    "subject": "Cash deployment options",                   "date": "2026-06-10", "with_specialist": False},
+        {"client_id": 3, "type": "Meeting",  "subject": "Annual review",                             "date": "2026-04-14", "with_specialist": True},
+        {"client_id": 2, "type": "Call",     "subject": "Lombard facility terms",                    "date": "2026-04-09", "with_specialist": False},
+    ],
+}
+
+# My Opportunities
+OPPORTUNITIES = [
+    {"id": 1, "client_id": 1, "product": "Global Markets", "title": "AI thematic basket",
+     "estimated_value_musd": 15.0, "potential_score": 8, "status": "Open",
+     "lead": "Sarah Keller", "updated": "2026-07-10",
+     "rationale": "Strong stated interest in technology and AI; equity allocation has room within the risk profile."},
+    {"id": 2, "client_id": 3, "product": "Global Lending", "title": "Lombard facility extension",
+     "estimated_value_musd": 10.0, "potential_score": 7, "status": "In Review",
+     "lead": "Marco Ricci", "updated": "2026-07-08",
+     "rationale": "Upcoming liquidity event in 2025 vintage fund; bridge financing need likely."},
+    {"id": 3, "client_id": 2, "product": "Global Banking", "title": "Pre-IPO advisory",
+     "estimated_value_musd": 25.0, "potential_score": 6, "status": "Open",
+     "lead": "Sarah Keller", "updated": "2026-07-01",
+     "rationale": "Family business exploring a listing; next-gen decision maker leading the process."},
+    {"id": 4, "client_id": 4, "product": "Global Alternatives", "title": "Private equity feeder",
+     "estimated_value_musd": 5.0, "potential_score": 9, "status": "Open",
+     "lead": "Anna Weber", "updated": "2026-06-28",
+     "rationale": "Alternatives allocation below target; client asked for PE track record last meeting."},
+    {"id": 5, "client_id": 5, "product": "Prime Brokerage", "title": "Custody consolidation",
+     "estimated_value_musd": 12.0, "potential_score": 4, "status": "Closed",
+     "lead": "Marco Ricci", "updated": "2026-05-20",
+     "rationale": "Client decided to keep assets with the current custodian for now."},
+]
+
+OPPORTUNITY_STATUSES = ["Open", "In Review", "Closed"]
+
+# Client news (landing page) — all headlines fictional
+NEWS = [
+    {"id": 1, "client_id": 1, "date": "2026-07-11",
+     "headline": "Smith Industries announces acquisition of a robotics startup",
+     "source": "Market wire"},
+    {"id": 2, "client_id": 3, "date": "2026-07-09",
+     "headline": "Brown family fund closes 2025 vintage above target",
+     "source": "PE newsletter"},
+    {"id": 3, "client_id": 2, "date": "2026-07-05",
+     "headline": "Johnson Group appoints new CFO ahead of possible listing",
+     "source": "Financial daily"},
+    {"id": 4, "client_id": 4, "date": "2026-06-30",
+     "headline": "Davis Ventures leads Series B in a climate-tech company",
+     "source": "VC digest"},
+]
