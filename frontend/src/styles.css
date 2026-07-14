@@ -1,171 +1,295 @@
+/* ============================================================
+   Personal View — "Engraved Ledger" theme
+   Palette: paper #F1F4F2 · ink #16262B · verdigris #17705F
+            copper #A85E2B · hairline #C9D4CF
+   Type:    display: Palatino (engraved serif) · body: Segoe UI
+            figures: Consolas, tabular
+   ============================================================ */
+
+:root {
+  --paper: #f1f4f2;
+  --paper-raised: #f9fbfa;
+  --ink: #16262b;
+  --ink-soft: #4a5a5e;
+  --verdigris: #17705f;
+  --verdigris-deep: #0f5245;
+  --copper: #a85e2b;
+  --hairline: #c9d4cf;
+  --display: 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif;
+  --body: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mono: Consolas, 'SF Mono', Menlo, monospace;
+}
+
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: #f4f5f7;
-  color: #1a1a1a;
+  font-family: var(--body);
+  background: var(--paper);
+  color: var(--ink);
 }
 
-/* Login */
+/* Guilloché arcs — the one ornament, drawn as inline SVG strokes */
 .login-wrap {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900' viewBox='0 0 900 900'%3E%3Cg fill='none' stroke='%2317705f' stroke-opacity='0.14'%3E%3Ccircle cx='450' cy='-120' r='420'/%3E%3Ccircle cx='450' cy='-120' r='460'/%3E%3Ccircle cx='450' cy='-120' r='500'/%3E%3Ccircle cx='450' cy='-120' r='540'/%3E%3Ccircle cx='450' cy='-120' r='580'/%3E%3Ccircle cx='450' cy='1020' r='420'/%3E%3Ccircle cx='450' cy='1020' r='460'/%3E%3Ccircle cx='450' cy='1020' r='500'/%3E%3Ccircle cx='450' cy='1020' r='540'/%3E%3Ccircle cx='450' cy='1020' r='580'/%3E%3C/g%3E%3C/svg%3E")
+    center / cover no-repeat,
+    var(--paper);
 }
-.login-card {
-  background: #fff;
-  padding: 2rem 2.5rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  width: 380px;
-}
-.login-card h1 { margin: 0 0 0.25rem; font-size: 1.5rem; }
-.subtitle { color: #666; margin-top: 0; }
-.login-card label { display: block; margin-bottom: 0.9rem; font-size: 0.85rem; color: #444; }
-.login-card input {
-  width: 100%;
-  margin-top: 0.25rem;
-  padding: 0.55rem 0.7rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 0.95rem;
-}
-.btn-primary {
-  width: 100%;
-  padding: 0.6rem;
-  background: #e60000;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-.btn-primary:disabled { opacity: 0.6; }
-.btn-secondary {
-  padding: 0.35rem 0.8rem;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.error { color: #c00; font-size: 0.85rem; }
 
-/* Role picker */
-.role-card { width: 420px; }
+.login-card {
+  width: 440px;
+  max-width: calc(100vw - 2rem);
+  padding: 2.4rem 2.4rem 2rem;
+  background: var(--paper-raised);
+  border: 1px solid var(--hairline);
+  box-shadow: 0 1px 0 var(--hairline), 0 18px 50px rgba(22, 38, 43, 0.1);
+}
+
+.login-card h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 2rem;
+  letter-spacing: 0.01em;
+}
+
+.subtitle {
+  margin: 0.3rem 0 1.6rem;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
 .role-btn {
   display: block;
   width: 100%;
   text-align: left;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 0.9rem 1.1rem;
-  margin-bottom: 0.7rem;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--hairline);
+  padding: 1rem 0.2rem;
   cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: padding-left 0.18s ease, background 0.18s ease;
 }
-.role-btn:hover:not(:disabled) {
-  border-color: #e60000;
-  box-shadow: 0 2px 10px rgba(230, 0, 0, 0.12);
+.role-btn:last-of-type { border-bottom: 1px solid var(--hairline); }
+.role-btn:hover,
+.role-btn:focus-visible {
+  background: rgba(23, 112, 95, 0.06);
+  padding-left: 0.8rem;
 }
-.role-btn-title { display: block; font-size: 1.05rem; font-weight: 600; }
-.role-btn-desc { display: block; font-size: 0.8rem; color: #777; margin-top: 0.15rem; }
+.role-btn:focus-visible { outline: 2px solid var(--verdigris); outline-offset: -2px; }
 
-/* App */
+.role-btn-title {
+  display: block;
+  font-family: var(--display);
+  font-size: 1.25rem;
+  color: var(--verdigris-deep);
+}
+.role-btn-title::after { content: ' →'; color: var(--verdigris); }
+.role-btn-desc {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin-top: 0.2rem;
+}
+
+.error { color: var(--copper); font-size: 0.85rem; }
+
+/* ---------------- App chrome ---------------- */
+
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #1a1a1a;
-  color: #fff;
-  padding: 0.7rem 1.5rem;
+  background: var(--ink);
+  color: var(--paper-raised);
+  padding: 0.75rem 1.5rem;
+  border-bottom: 3px solid var(--verdigris);
 }
-.brand { font-weight: 600; font-size: 1.1rem; }
-.userbox { display: flex; align-items: center; gap: 0.8rem; }
+.brand {
+  font-family: var(--display);
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+}
+.userbox { display: flex; align-items: center; gap: 0.9rem; font-size: 0.85rem; }
 .role-badge {
-  background: #e60000;
-  padding: 0.15rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
+  border: 1px solid var(--verdigris);
+  color: #9fd6c9;
+  padding: 0.18rem 0.7rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
-.content { max-width: 1100px; margin: 1.5rem auto; padding: 0 1.5rem; }
-.loading { text-align: center; margin-top: 3rem; color: #666; }
-
-/* KPIs */
-.kpi-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
-.kpi {
-  flex: 1;
-  background: #fff;
-  border-radius: 10px;
-  padding: 1rem 1.2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-.kpi-value { font-size: 1.8rem; font-weight: 600; }
-.kpi-label { color: #666; font-size: 0.85rem; margin-top: 0.2rem; }
-
-/* Tables */
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-.data-table th, .data-table td { padding: 0.6rem 0.9rem; text-align: left; font-size: 0.9rem; }
-.data-table thead { background: #fafafa; color: #555; }
-.data-table tbody tr { border-top: 1px solid #eee; }
-.num { text-align: right; font-variant-numeric: tabular-nums; }
-.pos { color: #0a7d33; }
-.neg { color: #c00; }
-
-/* Tabs */
-.tabs { display: flex; gap: 0.4rem; margin-bottom: 1rem; }
-.tab {
-  padding: 0.45rem 1rem;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  color: #555;
-}
-.tab-active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
-
-/* Editable cells (Specialist) */
-.cell-input {
-  width: 100%;
-  min-width: 90px;
-  padding: 0.3rem 0.45rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 0.85rem;
-}
-.data-table select {
-  padding: 0.3rem 0.35rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 0.85rem;
-  background: #fff;
-}
-.btn-small {
-  padding: 0.3rem 0.7rem;
-  background: #e60000;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
+.btn-secondary {
+  padding: 0.35rem 0.9rem;
+  background: transparent;
+  border: 1px solid rgba(249, 251, 250, 0.4);
+  color: var(--paper-raised);
   cursor: pointer;
   font-size: 0.8rem;
 }
-.btn-small:disabled { background: #ccc; cursor: default; }
-.rationale { max-width: 260px; font-size: 0.82rem; color: #555; }
-.total-row { font-weight: 600; background: #fafafa; }
+.btn-secondary:hover { border-color: var(--paper-raised); }
+
+.content { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem; }
+.loading { text-align: center; margin-top: 3rem; color: var(--ink-soft); }
+
+.content h2 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.3rem;
+  margin: 1.8rem 0 0.8rem;
+}
+
+/* ---------------- KPI ledger row ---------------- */
+
+.kpi-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: 1.6rem;
+}
+.kpi {
+  flex: 1;
+  min-width: 150px;
+  padding: 1rem 1.2rem 0.9rem 0;
+}
+.kpi + .kpi { border-left: 1px solid var(--hairline); padding-left: 1.2rem; }
+.kpi-value {
+  font-family: var(--display);
+  font-size: 2.3rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--verdigris-deep);
+}
+.kpi-label {
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-top: 0.3rem;
+}
+
+/* ---------------- Tabs ---------------- */
+
+.tabs {
+  display: flex;
+  gap: 1.4rem;
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: 1.2rem;
+}
+.tab {
+  padding: 0.5rem 0.1rem 0.6rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+.tab:hover { color: var(--ink); }
+.tab:focus-visible { outline: 2px solid var(--verdigris); outline-offset: 2px; }
+.tab-active {
+  color: var(--verdigris-deep);
+  border-bottom-color: var(--verdigris);
+  font-weight: 600;
+}
+
+/* ---------------- Tables ---------------- */
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--paper-raised);
+  border: 1px solid var(--hairline);
+}
+.data-table th, .data-table td {
+  padding: 0.6rem 0.9rem;
+  text-align: left;
+  font-size: 0.88rem;
+}
+.data-table thead th {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+  font-weight: 600;
+  border-bottom: 1px solid var(--ink);
+  background: var(--paper);
+}
+.data-table tbody tr { border-top: 1px solid var(--hairline); }
+.data-table tbody tr:hover { background: rgba(23, 112, 95, 0.04); }
+
+.num {
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 0.84rem;
+  font-variant-numeric: tabular-nums;
+}
+.pos { color: var(--verdigris-deep); }
+.neg { color: var(--copper); }
+
 .flag {
-  background: #fff3e0;
-  color: #b45309;
-  padding: 0.1rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.78rem;
+  color: var(--copper);
+  border: 1px solid currentColor;
+  padding: 0.08rem 0.5rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.rationale { max-width: 260px; font-size: 0.82rem; color: var(--ink-soft); }
+.total-row { font-weight: 600; background: var(--paper); }
+
+/* ---------------- Editable cells (Specialist) ---------------- */
+
+.cell-input {
+  width: 100%;
+  min-width: 90px;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--hairline);
+  background: var(--paper-raised);
+  font-size: 0.85rem;
+  font-family: var(--body);
+}
+.cell-input.num { font-family: var(--mono); }
+.cell-input:focus, .data-table select:focus {
+  outline: none;
+  border-color: var(--verdigris);
+}
+.data-table select {
+  padding: 0.35rem 0.4rem;
+  border: 1px solid var(--hairline);
+  background: var(--paper-raised);
+  font-size: 0.85rem;
+}
+.btn-small {
+  padding: 0.35rem 0.9rem;
+  background: var(--verdigris);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+}
+.btn-small:hover:not(:disabled) { background: var(--verdigris-deep); }
+.btn-small:disabled { background: var(--hairline); cursor: default; }
+
+/* ---------------- Responsive & motion ---------------- */
+
+@media (max-width: 700px) {
+  .kpi-row { flex-direction: column; }
+  .kpi + .kpi { border-left: none; border-top: 1px solid var(--hairline); padding-left: 0; }
+  .data-table { display: block; overflow-x: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
 }
