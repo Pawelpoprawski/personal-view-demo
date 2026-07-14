@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Home from './pages/Home.jsx'
 import Financials from './pages/Financials.jsx'
 import Engagement from './pages/Engagement.jsx'
@@ -8,6 +8,10 @@ const PAGES = ['Home', 'My Financials', 'My Engagement', 'My Opportunities']
 
 export default function App() {
   const [page, setPage] = useState('Home')
+
+  useEffect(() => {
+    document.title = page === 'Home' ? 'Insights Platform' : `${page} · Insights Platform`
+  }, [page])
 
   return (
     <div className="app">

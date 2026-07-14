@@ -1,25 +1,29 @@
 import { useEffect, useState } from 'react'
 import { fetchOpportunities, updateOpportunity } from '../api.js'
+import { useFetch, PageStatus } from '../useFetch.jsx'
 
 export default function Opportunities() {
+  const { data: fetched, error, reload } = useFetch(fetchOpportunities)
   const [data, setData] = useState(null)
   const [filter, setFilter] = useState('All')
-  const [error, setError] = useState('')
 
-  useEffect(() => {
-    fetchOpportunities().then(setData).catch((e) => setError(e.message))
-  }, [])
+  useEffect(() => { setData(fetched) }, [fetched])
 
   async function setStatus(o, status) {
-    const updated = await updateOpportunity(o.id, { status })
+    let updated
+    try {
+      updated = await updateOpportunity(o.id, { status })
+    } catch {
+      window.alert('Could not update the opportunity. Check that the backend is running and try again.')
+      return
+    }
     setData((d) => ({
       ...d,
       opportunities: d.opportunities.map((x) => (x.id === updated.id ? { ...x, ...updated } : x)),
     }))
   }
 
-  if (error) return <main className="content"><p className="error">{error}</p></main>
-  if (!data) return <main className="content"><p className="loading">Loading…</p></main>
+  if (!data) return <main className="content"><PageStatus error={error} reload={reload} /></main>
 
   const shown = data.opportunities.filter((o) => filter === 'All' || o.status === filter)
 

@@ -1,16 +1,10 @@
-import { useEffect, useState } from 'react'
 import { fetchEngagement } from '../api.js'
+import { useFetch, PageStatus } from '../useFetch.jsx'
 
 export default function Engagement() {
-  const [data, setData] = useState(null)
-  const [error, setError] = useState('')
+  const { data, error, reload } = useFetch(fetchEngagement)
 
-  useEffect(() => {
-    fetchEngagement().then(setData).catch((e) => setError(e.message))
-  }, [])
-
-  if (error) return <main className="content"><p className="error">{error}</p></main>
-  if (!data) return <main className="content"><p className="loading">Loading…</p></main>
+  if (!data) return <main className="content"><PageStatus error={error} reload={reload} /></main>
 
   return (
     <main className="content">

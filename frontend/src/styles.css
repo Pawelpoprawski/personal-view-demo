@@ -110,6 +110,8 @@ button { font-family: var(--body); }
 .content { max-width: 1200px; margin: 0 auto; padding: 24px 25px 48px; }
 .loading { text-align: center; margin-top: 48px; color: var(--grey-50); }
 .error { color: var(--red-deep); }
+.page-status { text-align: center; margin-top: 48px; }
+.page-status .btn-outline { margin-top: 8px; }
 
 .welcome { font-size: 28px; font-weight: 300; margin: 8px 0 2px; }
 .welcome-sub { margin: 0 0 24px; color: var(--grey-50); font-size: 14px; }

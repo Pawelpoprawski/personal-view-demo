@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
 import { fetchFinancials } from '../api.js'
+import { useFetch, PageStatus } from '../useFetch.jsx'
 
 const DONUT_COLORS = ['#1c1c1c', '#da0000', '#919191', '#dfc06d']
 
@@ -29,15 +29,9 @@ function Donut({ allocation }) {
 }
 
 export default function Financials() {
-  const [data, setData] = useState(null)
-  const [error, setError] = useState('')
+  const { data, error, reload } = useFetch(fetchFinancials)
 
-  useEffect(() => {
-    fetchFinancials().then(setData).catch((e) => setError(e.message))
-  }, [])
-
-  if (error) return <main className="content"><p className="error">{error}</p></main>
-  if (!data) return <main className="content"><p className="loading">Loading…</p></main>
+  if (!data) return <main className="content"><PageStatus error={error} reload={reload} /></main>
 
   return (
     <main className="content">

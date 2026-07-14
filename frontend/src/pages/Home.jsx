@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react'
 import { fetchHome, updateAction } from '../api.js'
+import { useFetch, PageStatus } from '../useFetch.jsx'
 
 export default function Home({ onNavigate }) {
+  const { data: fetched, error, reload } = useFetch(fetchHome)
   const [data, setData] = useState(null)
-  const [error, setError] = useState('')
 
-  useEffect(() => {
-    fetchHome().then(setData).catch((e) => setError(e.message))
-  }, [])
+  useEffect(() => { setData(fetched) }, [fetched])
 
   async function toggleAction(a) {
     const next = a.status === 'Open' ? 'Completed' : 'Open'
-    const updated = await updateAction(a.id, { status: next })
+    let updated
+    try {
+      updated = await updateAction(a.id, { status: next })
+    } catch {
+      window.alert('Could not update the action. Check that the backend is running and try again.')
+      return
+    }
     setData((d) => {
       const actions = d.actions.map((x) => (x.id === updated.id ? { ...x, ...updated } : x))
       const completed = actions.filter((x) => x.status === 'Completed').length
@@ -27,8 +32,7 @@ export default function Home({ onNavigate }) {
     })
   }
 
-  if (error) return <main className="content"><p className="error">{error}</p></main>
-  if (!data) return <main className="content"><p className="loading">Loading…</p></main>
+  if (!data) return <main className="content"><PageStatus error={error} reload={reload} /></main>
 
   return (
     <main className="content">
