@@ -1,50 +1,38 @@
 import { useEffect, useState } from 'react'
-import Login from './Login.jsx'
+import RolePicker from './Login.jsx'
 import Dashboard from './Dashboard.jsx'
-import { fetchDashboard, logout } from './api.js'
+import { fetchDashboard } from './api.js'
 
 export default function App() {
-  const [session, setSession] = useState(() => {
-    const saved = sessionStorage.getItem('session')
-    return saved ? JSON.parse(saved) : null
-  })
+  const [role, setRole] = useState(null)
   const [data, setData] = useState(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    if (!session) return
-    fetchDashboard(session.token)
-      .then(setData)
-      .catch(() => handleLogout())
-  }, [session])
-
-  function handleLogin(s) {
-    sessionStorage.setItem('session', JSON.stringify(s))
-    setSession(s)
-    setError('')
-  }
-
-  function handleLogout() {
-    if (session) logout(session.token)
-    sessionStorage.removeItem('session')
-    setSession(null)
+    if (!role) return
     setData(null)
-  }
+    setError('')
+    fetchDashboard(role)
+      .then(setData)
+      .catch((e) => setError(e.message))
+  }, [role])
 
-  if (!session) return <Login onLogin={handleLogin} />
+  if (!role) return <RolePicker onPick={setRole} />
 
   return (
     <div className="app">
       <header className="topbar">
         <div className="brand">Personal View</div>
         <div className="userbox">
-          <span>{session.name}</span>
-          <span className="role-badge">{session.role}</span>
-          <button className="btn-secondary" onClick={handleLogout}>Log out</button>
+          {data && <span>{data.name}</span>}
+          <span className="role-badge">{role}</span>
+          <button className="btn-secondary" onClick={() => setRole(null)}>
+            Switch view
+          </button>
         </div>
       </header>
       {error && <p className="error">{error}</p>}
-      {data ? <Dashboard data={data} token={session.token} /> : <p className="loading">Loading…</p>}
+      {data ? <Dashboard data={data} /> : !error && <p className="loading">Loading…</p>}
     </div>
   )
 }

@@ -1,17 +1,16 @@
-"""Simple demo backend: role-based login + dashboards + editable proposals.
+"""Demo backend: no authentication — pick a role, get that role's dashboard.
 
 Run:  uvicorn main:app --reload --port 8000
 """
-import secrets
-from typing import Optional
 from pathlib import Path
+from typing import Optional
 
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from data import CLIENTS, PROPOSAL_STATUSES, PROPOSALS, ROLE_DEFAULT_USER, USERS
+from data import ADVISORS, CLIENTS, PROPOSAL_STATUSES, PROPOSALS
 
 app = FastAPI(title="Personal View Demo API")
 
@@ -22,12 +21,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# token -> username (in-memory, resets on restart)
-SESSIONS: dict[str, str] = {}
+# The Client Advisor view shows this advisor's book.
+DEFAULT_ADVISOR_ID = "CA-001"
 
-
-class RoleLoginRequest(BaseModel):
-    role: str
+VIEW_USERS = {
+    "Client Advisor": ADVISORS[DEFAULT_ADVISOR_ID],
+    "Specialist": "Thomas Green",
+    "Management": "Julia Weiss",
+}
 
 
 class ProposalUpdate(BaseModel):
@@ -36,47 +37,21 @@ class ProposalUpdate(BaseModel):
     comment: Optional[str] = None
 
 
-def get_current_user(authorization: Optional[str]):
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing token")
-    username = SESSIONS.get(authorization.removeprefix("Bearer "))
-    if not username:
-        raise HTTPException(status_code=401, detail="Invalid token")
-    return {"username": username, **USERS[username]}
-
-
 def client_by_id(cid: int):
     return next(c for c in CLIENTS if c["id"] == cid)
 
 
-@app.post("/api/login-role")
-def login_role(req: RoleLoginRequest):
-    username = ROLE_DEFAULT_USER.get(req.role)
-    if not username:
-        raise HTTPException(status_code=400, detail="Unknown role")
-    user = USERS[username]
-    token = secrets.token_hex(16)
-    SESSIONS[token] = username
-    return {"token": token, "name": user["name"], "role": user["role"]}
-
-
-@app.post("/api/logout")
-def logout(authorization: Optional[str] = Header(default=None)):
-    if authorization and authorization.startswith("Bearer "):
-        SESSIONS.pop(authorization.removeprefix("Bearer "), None)
-    return {"ok": True}
-
-
 @app.get("/api/dashboard")
-def dashboard(authorization: Optional[str] = Header(default=None)):
-    user = get_current_user(authorization)
-    role = user["role"]
+def dashboard(role: str):
+    if role not in VIEW_USERS:
+        raise HTTPException(status_code=400, detail="Unknown role")
+    name = VIEW_USERS[role]
 
     if role == "Client Advisor":
-        my = [c for c in CLIENTS if c["advisor_id"] == user["advisor_id"]]
+        my = [c for c in CLIENTS if c["advisor_id"] == DEFAULT_ADVISOR_ID]
         return {
             "role": role,
-            "name": user["name"],
+            "name": name,
             "clients": my,
             "kpis": {
                 "total_clients": len(my),
@@ -100,9 +75,8 @@ def dashboard(authorization: Optional[str] = Header(default=None)):
             a["revenue_ytd_kusd"] += c["revenue_ytd_kusd"]
             a["nnm_ytd_musd"] = round(a["nnm_ytd_musd"] + c["nnm_ytd_musd"], 1)
             a["reviews_pending"] += 1 if c["needs_review"] else 0
-        advisor_names = {u["advisor_id"]: u["name"] for u in USERS.values() if u["advisor_id"]}
         for a in by_advisor.values():
-            a["advisor_name"] = advisor_names.get(a["advisor_id"], a["advisor_id"])
+            a["advisor_name"] = ADVISORS.get(a["advisor_id"], a["advisor_id"])
 
         by_segment = {}
         for c in CLIENTS:
@@ -115,7 +89,7 @@ def dashboard(authorization: Optional[str] = Header(default=None)):
         open_props = [p for p in PROPOSALS if p["status"] in ("New", "In progress", "Proposed")]
         return {
             "role": role,
-            "name": user["name"],
+            "name": name,
             "advisors": list(by_advisor.values()),
             "segments": list(by_segment.values()),
             "kpis": {
@@ -137,7 +111,7 @@ def dashboard(authorization: Optional[str] = Header(default=None)):
     open_props = [p for p in props if p["status"] in ("New", "In progress", "Proposed")]
     return {
         "role": role,
-        "name": user["name"],
+        "name": name,
         "proposals": props,
         "statuses": PROPOSAL_STATUSES,
         "kpis": {
@@ -150,11 +124,7 @@ def dashboard(authorization: Optional[str] = Header(default=None)):
 
 
 @app.patch("/api/proposals/{proposal_id}")
-def update_proposal(proposal_id: int, update: ProposalUpdate,
-                    authorization: Optional[str] = Header(default=None)):
-    user = get_current_user(authorization)
-    if user["role"] != "Specialist":
-        raise HTTPException(status_code=403, detail="Only Specialists can edit proposals")
+def update_proposal(proposal_id: int, update: ProposalUpdate):
     prop = next((p for p in PROPOSALS if p["id"] == proposal_id), None)
     if not prop:
         raise HTTPException(status_code=404, detail="Proposal not found")

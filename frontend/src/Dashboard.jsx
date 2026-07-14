@@ -125,7 +125,7 @@ function AdvisorView({ data }) {
 
 /* ---------------- Specialist (Sales) ---------------- */
 
-function ProposalRow({ p, statuses, token, onSaved }) {
+function ProposalRow({ p, statuses, onSaved }) {
   const [status, setStatus] = useState(p.status)
   const [volume, setVolume] = useState(p.expected_volume_musd)
   const [comment, setComment] = useState(p.comment)
@@ -135,7 +135,7 @@ function ProposalRow({ p, statuses, token, onSaved }) {
   async function save() {
     setSaving(true)
     try {
-      const updated = await updateProposal(token, p.id, {
+      const updated = await updateProposal(p.id, {
         status,
         expected_volume_musd: Number(volume),
         comment,
@@ -176,7 +176,7 @@ function ProposalRow({ p, statuses, token, onSaved }) {
   )
 }
 
-function SpecialistView({ data, token }) {
+function SpecialistView({ data }) {
   const tabs = ['Proposals', 'Pipeline']
   const [tab, setTab] = useState(tabs[0])
   const [proposals, setProposals] = useState(data.proposals)
@@ -208,7 +208,7 @@ function SpecialistView({ data, token }) {
           </thead>
           <tbody>
             {proposals.map((p) => (
-              <ProposalRow key={p.id} p={p} statuses={data.statuses} token={token} onSaved={onSaved} />
+              <ProposalRow key={p.id} p={p} statuses={data.statuses} onSaved={onSaved} />
             ))}
           </tbody>
         </table>
@@ -309,12 +309,12 @@ function ManagementView({ data }) {
   )
 }
 
-export default function Dashboard({ data, token }) {
+export default function Dashboard({ data }) {
   return (
     <main className="content">
       {data.role === 'Client Advisor' && <AdvisorView data={data} />}
       {data.role === 'Management' && <ManagementView data={data} />}
-      {data.role === 'Specialist' && <SpecialistView data={data} token={token} />}
+      {data.role === 'Specialist' && <SpecialistView data={data} />}
     </main>
   )
 }

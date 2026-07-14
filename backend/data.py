@@ -1,37 +1,8 @@
-"""Dummy data for the demo app. All names, numbers and emails are fictional."""
+"""Dummy data for the demo app. All names and numbers are fictional."""
 
-USERS = {
-    "anna": {
-        "password": "advisor123",
-        "name": "Anna Kowalska",
-        "role": "Client Advisor",
-        "advisor_id": "CA-001",
-    },
-    "marek": {
-        "password": "advisor123",
-        "name": "Marek Nowak",
-        "role": "Client Advisor",
-        "advisor_id": "CA-002",
-    },
-    "boss": {
-        "password": "manager123",
-        "name": "Julia Wiśniewska",
-        "role": "Management",
-        "advisor_id": None,
-    },
-    "spec": {
-        "password": "spec123",
-        "name": "Tomasz Zieliński",
-        "role": "Specialist",
-        "advisor_id": None,
-    },
-}
-
-# One default demo account per role (used by the role buttons on the start page)
-ROLE_DEFAULT_USER = {
-    "Client Advisor": "anna",
-    "Specialist": "spec",
-    "Management": "boss",
+ADVISORS = {
+    "CA-001": "Anna Carter",
+    "CA-002": "Mark Novak",
 }
 
 CLIENTS = [

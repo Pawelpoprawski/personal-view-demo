@@ -1,45 +1,21 @@
-import { useState } from 'react'
-import { loginRole } from './api.js'
-
 const ROLES = [
-  { role: 'Client Advisor', desc: 'Moi klienci, revenues, invested assets' },
-  { role: 'Specialist', desc: 'Propozycje produktowe (Sales), pipeline' },
-  { role: 'Management', desc: 'Sumaryczne dane zespołu i segmentów' },
+  { role: 'Client Advisor', desc: 'My clients, revenues, invested assets' },
+  { role: 'Specialist', desc: 'Product proposals (Sales), pipeline' },
+  { role: 'Management', desc: 'Team-level summary figures' },
 ]
 
-export default function Login({ onLogin }) {
-  const [error, setError] = useState('')
-  const [busy, setBusy] = useState('')
-
-  async function pick(role) {
-    setBusy(role)
-    setError('')
-    try {
-      onLogin(await loginRole(role))
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setBusy('')
-    }
-  }
-
+export default function RolePicker({ onPick }) {
   return (
     <div className="login-wrap">
       <div className="login-card role-card">
         <h1>Personal View</h1>
-        <p className="subtitle">Wybierz swój profil</p>
+        <p className="subtitle">Choose your view</p>
         {ROLES.map((r) => (
-          <button
-            key={r.role}
-            className="role-btn"
-            disabled={!!busy}
-            onClick={() => pick(r.role)}
-          >
-            <span className="role-btn-title">{busy === r.role ? 'Logowanie…' : r.role}</span>
+          <button key={r.role} className="role-btn" onClick={() => onPick(r.role)}>
+            <span className="role-btn-title">{r.role}</span>
             <span className="role-btn-desc">{r.desc}</span>
           </button>
         ))}
-        {error && <p className="error">{error}</p>}
       </div>
     </div>
   )
