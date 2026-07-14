@@ -1,5 +1,12 @@
+// Slugs avoid spaces in the query string — some proxies re-encode "%20" to "%2520".
+const ROLE_SLUGS = {
+  'Client Advisor': 'advisor',
+  'Specialist': 'specialist',
+  'Management': 'management',
+}
+
 export async function fetchDashboard(role) {
-  const res = await fetch(`api/dashboard?role=${encodeURIComponent(role)}`)
+  const res = await fetch(`api/dashboard?role=${ROLE_SLUGS[role] || role}`)
   if (!res.ok) throw new Error('Failed to load dashboard')
   return res.json()
 }

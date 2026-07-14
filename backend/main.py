@@ -41,8 +41,16 @@ def client_by_id(cid: int):
     return next(c for c in CLIENTS if c["id"] == cid)
 
 
+ROLE_SLUGS = {
+    "advisor": "Client Advisor",
+    "specialist": "Specialist",
+    "management": "Management",
+}
+
+
 @app.get("/api/dashboard")
 def dashboard(role: str):
+    role = ROLE_SLUGS.get(role, role)
     if role not in VIEW_USERS:
         raise HTTPException(status_code=400, detail="Unknown role")
     name = VIEW_USERS[role]
