@@ -216,6 +216,31 @@ button { font-family: var(--body); }
 .btn-outline:hover { border-color: var(--red); color: var(--red); }
 .btn-outline:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
 
+/* ---------------- Client links & one-pager ---------------- */
+
+.client-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.client-link:hover { color: var(--red); }
+.client-link:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+
+.client-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.client-head .page-title { margin-bottom: 2px; }
+.tile-value.neg { color: var(--red-deep); }
+
 /* ---------------- News / interactions ---------------- */
 
 .news-item { border-top: 1px solid var(--grey-line); padding: 12px 0; }

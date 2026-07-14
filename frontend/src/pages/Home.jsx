@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { fetchHome, updateAction } from '../api.js'
 import { useFetch, PageStatus } from '../useFetch.jsx'
 
-export default function Home({ onNavigate }) {
+export default function Home({ onNavigate, onOpenClient }) {
   const { data: fetched, error, reload } = useFetch(fetchHome)
   const [data, setData] = useState(null)
 
@@ -76,7 +76,9 @@ export default function Home({ onNavigate }) {
                 <p className="action-note">{a.note}</p>
                 <p className="action-detail">{a.detail}</p>
                 <div className="action-meta">
-                  <span>{a.client_name}</span>
+                  <button type="button" className="client-link" onClick={() => onOpenClient(a.client_id, a.client_name)}>
+                    {a.client_name}
+                  </button>
                   <span>Due {a.due}</span>
                 </div>
               </div>
@@ -95,7 +97,12 @@ export default function Home({ onNavigate }) {
             <article key={n.id} className="news-item">
               <div className="news-date">{n.date}</div>
               <div className="news-headline">{n.headline}</div>
-              <div className="news-meta">{n.client_name} · {n.source}</div>
+              <div className="news-meta">
+                <button type="button" className="client-link" onClick={() => onOpenClient(n.client_id, n.client_name)}>
+                  {n.client_name}
+                </button>
+                {' '}· {n.source}
+              </div>
             </article>
           ))}
         </section>

@@ -28,7 +28,7 @@ function Donut({ allocation }) {
   )
 }
 
-export default function Financials() {
+export default function Financials({ onOpenClient }) {
   const { data, error, reload } = useFetch(fetchFinancials)
 
   if (!data) return <main className="content"><PageStatus error={error} reload={reload} /></main>
@@ -96,7 +96,11 @@ export default function Financials() {
           <tbody>
             {data.clients.map((c) => (
               <tr key={c.id}>
-                <td>{c.name}</td>
+                <td>
+                  <button type="button" className="client-link" onClick={() => onOpenClient(c.id, c.name)}>
+                    {c.name}
+                  </button>
+                </td>
                 <td>{c.segment}</td>
                 <td className="num">{c.aum_musd.toFixed(1)}</td>
                 <td className="num">{c.share_of_wallet_pct}%</td>

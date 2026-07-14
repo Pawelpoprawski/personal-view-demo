@@ -1,7 +1,7 @@
 import { fetchEngagement } from '../api.js'
 import { useFetch, PageStatus } from '../useFetch.jsx'
 
-export default function Engagement() {
+export default function Engagement({ onOpenClient }) {
   const { data, error, reload } = useFetch(fetchEngagement)
 
   if (!data) return <main className="content"><PageStatus error={error} reload={reload} /></main>
@@ -35,7 +35,11 @@ export default function Engagement() {
             <tbody>
               {data.clients.map((c) => (
                 <tr key={c.id}>
-                  <td>{c.name}</td>
+                  <td>
+                    <button type="button" className="client-link" onClick={() => onOpenClient(c.id, c.name)}>
+                      {c.name}
+                    </button>
+                  </td>
                   <td className="num">{c.engagement_score}/10</td>
                   <td className="num">{c.last_interaction_days} days ago</td>
                   <td>

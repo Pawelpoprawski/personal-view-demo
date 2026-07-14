@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { fetchOpportunities, updateOpportunity } from '../api.js'
 import { useFetch, PageStatus } from '../useFetch.jsx'
 
-export default function Opportunities() {
+export default function Opportunities({ onOpenClient }) {
   const { data: fetched, error, reload } = useFetch(fetchOpportunities)
   const [data, setData] = useState(null)
   const [filter, setFilter] = useState('All')
@@ -68,7 +68,12 @@ export default function Opportunities() {
             <div className="opp-value">${o.estimated_value_musd}M</div>
           </div>
           <div className="opp-grid">
-            <div><span className="opp-k">Client</span>{o.client_name}</div>
+            <div>
+              <span className="opp-k">Client</span>
+              <button type="button" className="client-link" onClick={() => onOpenClient(o.client_id, o.client_name)}>
+                {o.client_name}
+              </button>
+            </div>
             <div><span className="opp-k">Product</span>{o.product}</div>
             <div><span className="opp-k">Potential Score</span>{o.potential_score}/10</div>
             <div><span className="opp-k">Opportunity Lead</span>{o.lead}</div>

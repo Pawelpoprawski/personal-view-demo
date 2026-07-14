@@ -3,15 +3,28 @@ import Home from './pages/Home.jsx'
 import Financials from './pages/Financials.jsx'
 import Engagement from './pages/Engagement.jsx'
 import Opportunities from './pages/Opportunities.jsx'
+import Client from './pages/Client.jsx'
 
 const PAGES = ['Home', 'My Financials', 'My Engagement', 'My Opportunities']
 
 export default function App() {
   const [page, setPage] = useState('Home')
+  // { id, name, from } — set when a client one-pager is open
+  const [client, setClient] = useState(null)
 
   useEffect(() => {
-    document.title = page === 'Home' ? 'Insights Platform' : `${page} · Insights Platform`
-  }, [page])
+    const title = client ? client.name : page
+    document.title = title === 'Home' ? 'Insights Platform' : `${title} · Insights Platform`
+  }, [page, client])
+
+  function navigate(p) {
+    setClient(null)
+    setPage(p)
+  }
+
+  function openClient(id, name) {
+    setClient({ id, name, from: page })
+  }
 
   return (
     <div className="app">
@@ -24,8 +37,9 @@ export default function App() {
           {PAGES.map((p) => (
             <button
               key={p}
-              className={`nav-link ${p === page ? 'nav-link-active' : ''}`}
-              onClick={() => setPage(p)}
+              type="button"
+              className={`nav-link ${p === page && !client ? 'nav-link-active' : ''}`}
+              onClick={() => navigate(p)}
             >
               {p}
             </button>
@@ -36,18 +50,39 @@ export default function App() {
         </div>
       </header>
 
-      {page !== 'Home' && (
+      {(page !== 'Home' || client) && (
         <div className="breadcrumbs">
-          <button className="crumb" onClick={() => setPage('Home')}>Home</button>
-          <span className="crumb-sep">›</span>
-          <span className="crumb-current">{page}</span>
+          <button type="button" className="crumb" onClick={() => navigate('Home')}>Home</button>
+          {client ? (
+            <>
+              {client.from !== 'Home' && (
+                <>
+                  <span className="crumb-sep">›</span>
+                  <button type="button" className="crumb" onClick={() => setClient(null)}>{client.from}</button>
+                </>
+              )}
+              <span className="crumb-sep">›</span>
+              <span className="crumb-current">{client.name}</span>
+            </>
+          ) : (
+            <>
+              <span className="crumb-sep">›</span>
+              <span className="crumb-current">{page}</span>
+            </>
+          )}
         </div>
       )}
 
-      {page === 'Home' && <Home onNavigate={setPage} />}
-      {page === 'My Financials' && <Financials />}
-      {page === 'My Engagement' && <Engagement />}
-      {page === 'My Opportunities' && <Opportunities />}
+      {client ? (
+        <Client clientId={client.id} />
+      ) : (
+        <>
+          {page === 'Home' && <Home onNavigate={navigate} onOpenClient={openClient} />}
+          {page === 'My Financials' && <Financials onOpenClient={openClient} />}
+          {page === 'My Engagement' && <Engagement onOpenClient={openClient} />}
+          {page === 'My Opportunities' && <Opportunities onOpenClient={openClient} />}
+        </>
+      )}
     </div>
   )
 }
