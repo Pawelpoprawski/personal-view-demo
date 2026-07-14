@@ -3,9 +3,11 @@
 Run:  uvicorn main:app --reload --port 8000
 """
 import secrets
+from pathlib import Path
 
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from data import CLIENTS, PROPOSAL_STATUSES, PROPOSALS, ROLE_DEFAULT_USER, USERS
@@ -164,3 +166,9 @@ def update_proposal(proposal_id: int, update: ProposalUpdate,
     if update.comment is not None:
         prop["comment"] = update.comment
     return prop
+
+
+# Serve the built frontend (frontend/dist) if it exists — single-port deploy.
+DIST = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+if DIST.is_dir():
+    app.mount("/", StaticFiles(directory=DIST, html=True), name="frontend")
