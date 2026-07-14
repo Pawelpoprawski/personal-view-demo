@@ -3,6 +3,7 @@
 Run:  uvicorn main:app --reload --port 8000
 """
 import secrets
+from typing import Optional
 from pathlib import Path
 
 from fastapi import FastAPI, Header, HTTPException
@@ -30,12 +31,12 @@ class RoleLoginRequest(BaseModel):
 
 
 class ProposalUpdate(BaseModel):
-    status: str | None = None
-    expected_volume_musd: float | None = None
-    comment: str | None = None
+    status: Optional[str] = None
+    expected_volume_musd: Optional[float] = None
+    comment: Optional[str] = None
 
 
-def get_current_user(authorization: str | None):
+def get_current_user(authorization: Optional[str]):
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing token")
     username = SESSIONS.get(authorization.removeprefix("Bearer "))
@@ -60,14 +61,14 @@ def login_role(req: RoleLoginRequest):
 
 
 @app.post("/api/logout")
-def logout(authorization: str | None = Header(default=None)):
+def logout(authorization: Optional[str] = Header(default=None)):
     if authorization and authorization.startswith("Bearer "):
         SESSIONS.pop(authorization.removeprefix("Bearer "), None)
     return {"ok": True}
 
 
 @app.get("/api/dashboard")
-def dashboard(authorization: str | None = Header(default=None)):
+def dashboard(authorization: Optional[str] = Header(default=None)):
     user = get_current_user(authorization)
     role = user["role"]
 
@@ -150,7 +151,7 @@ def dashboard(authorization: str | None = Header(default=None)):
 
 @app.patch("/api/proposals/{proposal_id}")
 def update_proposal(proposal_id: int, update: ProposalUpdate,
-                    authorization: str | None = Header(default=None)):
+                    authorization: Optional[str] = Header(default=None)):
     user = get_current_user(authorization)
     if user["role"] != "Specialist":
         raise HTTPException(status_code=403, detail="Only Specialists can edit proposals")
