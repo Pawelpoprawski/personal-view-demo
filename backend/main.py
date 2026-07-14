@@ -2,8 +2,9 @@
 
 Run:  uvicorn main:app --reload --port 8000
 """
+import threading
 from pathlib import Path
-from typing import Optional
+from typing import Literal, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,12 +24,16 @@ app.add_middleware(
 )
 
 
+# Sync endpoints run in a threadpool — guard shared in-memory data.
+DATA_LOCK = threading.Lock()
+
+
 class ActionUpdate(BaseModel):
-    status: Optional[str] = None
+    status: Optional[Literal["Open", "Completed"]] = None
 
 
 class OpportunityUpdate(BaseModel):
-    status: Optional[str] = None
+    status: Optional[Literal["Open", "In Review", "Closed"]] = None
 
 
 def client_map():
@@ -81,9 +86,13 @@ def financials():
     }
 
 
+@app.get("/api/health")
+def health():
+    return {"status": "ok"}
+
+
 @app.get("/api/engagement")
 def engagement():
-    cm = client_map()
     clients = [
         {
             "id": c["id"], "name": c["name"],
@@ -132,26 +141,24 @@ def client_one_pager(client_id: int):
 
 @app.patch("/api/actions/{action_id}")
 def update_action(action_id: int, update: ActionUpdate):
-    action = next((a for a in ACTIONS if a["id"] == action_id), None)
-    if not action:
-        raise HTTPException(status_code=404, detail="Action not found")
-    if update.status is not None:
-        if update.status not in ("Open", "Completed"):
-            raise HTTPException(status_code=400, detail="Invalid status")
-        action["status"] = update.status
-    return action
+    with DATA_LOCK:
+        action = next((a for a in ACTIONS if a["id"] == action_id), None)
+        if not action:
+            raise HTTPException(status_code=404, detail="Action not found")
+        if update.status is not None:
+            action["status"] = update.status
+        return action
 
 
 @app.patch("/api/opportunities/{opp_id}")
 def update_opportunity(opp_id: int, update: OpportunityUpdate):
-    opp = next((o for o in OPPORTUNITIES if o["id"] == opp_id), None)
-    if not opp:
-        raise HTTPException(status_code=404, detail="Opportunity not found")
-    if update.status is not None:
-        if update.status not in OPPORTUNITY_STATUSES:
-            raise HTTPException(status_code=400, detail="Invalid status")
-        opp["status"] = update.status
-    return opp
+    with DATA_LOCK:
+        opp = next((o for o in OPPORTUNITIES if o["id"] == opp_id), None)
+        if not opp:
+            raise HTTPException(status_code=404, detail="Opportunity not found")
+        if update.status is not None:
+            opp["status"] = update.status
+        return opp
 
 
 # Serve the built frontend (frontend/dist) if it exists — single-port deploy.
