@@ -35,5 +35,20 @@ export function PageStatus({ error, reload }) {
       </div>
     )
   }
-  return <p className="loading">Loading…</p>
+  // Skeleton placeholders while loading
+  return (
+    <div aria-busy="true" aria-label="Loading">
+      <div className="tile-row">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="data-tile">
+            <div className="skeleton skeleton-value" />
+            <div className="skeleton skeleton-label" />
+          </div>
+        ))}
+      </div>
+      <div className="panel">
+        {[0, 1, 2, 3, 4].map((i) => <div key={i} className="skeleton skeleton-row" />)}
+      </div>
+    </div>
+  )
 }

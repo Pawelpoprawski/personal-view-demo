@@ -154,3 +154,76 @@ NEWS = [
      "headline": "Davis Ventures leads Series B in a climate-tech company",
      "source": "VC digest"},
 ]
+
+
+# 12-month history for trend charts (book level)
+HISTORY = [
+    {"month": "Aug 25", "aum_musd": 471.0, "nnm_musd": 2.1, "revenue_kusd": 1810},
+    {"month": "Sep 25", "aum_musd": 476.5, "nnm_musd": 3.4, "revenue_kusd": 1930},
+    {"month": "Oct 25", "aum_musd": 468.9, "nnm_musd": -1.8, "revenue_kusd": 1780},
+    {"month": "Nov 25", "aum_musd": 482.3, "nnm_musd": 4.9, "revenue_kusd": 2100},
+    {"month": "Dec 25", "aum_musd": 495.8, "nnm_musd": 6.2, "revenue_kusd": 2450},
+    {"month": "Jan 26", "aum_musd": 489.1, "nnm_musd": -2.4, "revenue_kusd": 1990},
+    {"month": "Feb 26", "aum_musd": 497.6, "nnm_musd": 3.1, "revenue_kusd": 2150},
+    {"month": "Mar 26", "aum_musd": 505.2, "nnm_musd": 4.4, "revenue_kusd": 2320},
+    {"month": "Apr 26", "aum_musd": 500.7, "nnm_musd": -0.9, "revenue_kusd": 2050},
+    {"month": "May 26", "aum_musd": 509.9, "nnm_musd": 3.8, "revenue_kusd": 2210},
+    {"month": "Jun 26", "aum_musd": 516.4, "nnm_musd": 4.7, "revenue_kusd": 2380},
+    {"month": "Jul 26", "aum_musd": 523.0, "nnm_musd": 3.9, "revenue_kusd": 2290},
+]
+
+# Team members who can be assigned to opportunities
+TEAM = [
+    {"id": 1, "name": "Sarah Keller", "initials": "SK", "role": "Investment Specialist"},
+    {"id": 2, "name": "Marco Ricci", "initials": "MR", "role": "Lending Specialist"},
+    {"id": 3, "name": "Anna Weber", "initials": "AW", "role": "Alternatives Specialist"},
+    {"id": 4, "name": "David Chen", "initials": "DC", "role": "Wealth Planner"},
+]
+
+# Notes on actions and clients (editable in the UI)
+ACTION_NOTES = {
+    1: [{"id": 1, "text": "Client prefers calls after 4pm.", "created": "2026-07-08"}],
+    3: [{"id": 2, "text": "Terms revised after first feedback.", "created": "2026-07-05"}],
+}
+CLIENT_NOTES = {
+    1: [{"id": 3, "text": "Interested in expanding robotics exposure.", "created": "2026-07-11"}],
+    3: [{"id": 4, "text": "Expecting fund distribution in Q4.", "created": "2026-07-02"}],
+}
+
+# Default assignees per opportunity (team member ids)
+OPPORTUNITY_ASSIGNEES = {1: [1], 2: [2], 3: [1, 4], 4: [3], 5: [2]}
+
+
+# Per-client 12-month history (deterministic shapes so charts differ per client).
+_MONTHS = [h["month"] for h in HISTORY]
+_SHAPES = {
+    1: [0.86, 0.88, 0.87, 0.90, 0.93, 0.92, 0.94, 0.96, 0.95, 0.97, 0.99, 1.00],  # steady growth
+    2: [1.06, 1.08, 1.05, 1.04, 1.06, 1.03, 1.02, 1.04, 1.01, 1.02, 1.00, 1.00],  # slow decline
+    3: [0.90, 0.91, 0.89, 0.92, 0.95, 0.93, 0.96, 0.94, 0.97, 0.96, 0.98, 1.00],  # choppy growth
+    4: [0.78, 0.80, 0.83, 0.85, 0.88, 0.90, 0.91, 0.94, 0.95, 0.97, 0.98, 1.00],  # strong growth
+    5: [1.01, 0.99, 1.02, 1.00, 0.98, 1.01, 0.99, 1.00, 0.98, 1.00, 0.99, 1.00],  # flat
+}
+
+
+def _client_history(client):
+    shape = _SHAPES[client["id"]]
+    rows = []
+    for i, month in enumerate(_MONTHS):
+        rows.append({
+            "month": month,
+            "aum_musd": round(client["aum_musd"] * shape[i], 1),
+            "revenue_kusd": round(client["revenue_ytd_kusd"] / 12 * (0.7 + 0.6 * shape[i])),
+        })
+    return rows
+
+
+CLIENT_HISTORY = {c["id"]: _client_history(c) for c in CLIENTS}
+
+# Year-over-year figures per client (fictional prior-year baselines)
+CLIENT_YOY = {
+    1: {"aum_yoy_pct": 16.3, "revenue_yoy_pct": 12.1, "sow_yoy_pp": 4,  "nnm_prev_musd": 5.2},
+    2: {"aum_yoy_pct": -5.8, "revenue_yoy_pct": -9.4, "sow_yoy_pp": -3, "nnm_prev_musd": 2.8},
+    3: {"aum_yoy_pct": 11.0, "revenue_yoy_pct": 7.6,  "sow_yoy_pp": 2,  "nnm_prev_musd": 1.9},
+    4: {"aum_yoy_pct": 28.4, "revenue_yoy_pct": 22.9, "sow_yoy_pp": 8,  "nnm_prev_musd": 0.7},
+    5: {"aum_yoy_pct": 0.9,  "revenue_yoy_pct": -1.5, "sow_yoy_pp": 0,  "nnm_prev_musd": 1.3},
+}

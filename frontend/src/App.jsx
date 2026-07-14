@@ -4,6 +4,7 @@ import Financials from './pages/Financials.jsx'
 import Engagement from './pages/Engagement.jsx'
 import Opportunities from './pages/Opportunities.jsx'
 import Client from './pages/Client.jsx'
+import SearchBox from './components/SearchBox.jsx'
 
 const PAGES = ['Home', 'My Financials', 'My Engagement', 'My Opportunities']
 
@@ -46,6 +47,7 @@ export default function App() {
           ))}
         </nav>
         <div className="userbox">
+          <SearchBox onOpenClient={openClient} onNavigate={navigate} />
           <span className="avatar">JM</span>
         </div>
       </header>
