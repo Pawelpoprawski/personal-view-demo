@@ -28,3 +28,7 @@ export const updateClientTags = (id, tags) => request(`api/clients/${id}/tags`, 
 export const addClientNote = (id, text) => request(`api/clients/${id}/notes`, 'POST', { text })
 
 export const talk = (question) => request('api/talk', 'POST', { question })
+
+export const fetchPrep = (clientId) => request(`api/clients/${clientId}/prep`)
+export const fetchNotifications = () => request('api/notifications')
+export const markNotificationsRead = () => request('api/notifications/read', 'POST', {})

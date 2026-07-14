@@ -13,9 +13,9 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from data import (ACTION_NOTES, ACTIONS, ADVISOR, CLIENT_HISTORY, CLIENT_NOTES,
-                  CLIENT_YOY, CLIENTS, ENGAGEMENT, FINANCIALS, HISTORY, NEWS,
-                  OPPORTUNITIES, OPPORTUNITY_ASSIGNEES, OPPORTUNITY_STATUSES,
-                  TEAM)
+                  CLIENT_YOY, CLIENTS, ENGAGEMENT, FINANCIALS, HISTORY,
+                  MEETINGS, NEWS, NOTIFICATIONS, OPPORTUNITIES,
+                  OPPORTUNITY_ASSIGNEES, OPPORTUNITY_STATUSES, TEAM)
 
 app = FastAPI(title="Insights Platform Demo API")
 
@@ -195,6 +195,7 @@ def home():
             "completion_rate_pct": round(100 * len(completed) / total) if total else 0,
         },
         "news": with_client(NEWS),
+        "meetings": with_client(MEETINGS),
         "history": HISTORY,
         "insights": build_insights(),
         "clients": [{"id": c["id"], "name": c["name"]} for c in CLIENTS],
@@ -217,6 +218,7 @@ def financials():
         "clients": [
             {
                 "id": c["id"], "name": c["name"], "segment": c["segment"],
+                "booking_location": c["booking_location"],
                 "aum_musd": c["aum_musd"], "share_of_wallet_pct": c["share_of_wallet_pct"],
                 "revenue_ytd_kusd": c["revenue_ytd_kusd"], "nnm_ytd_musd": c["nnm_ytd_musd"],
                 "loans_musd": c["liabilities"]["Loans"], "mortgages_musd": c["liabilities"]["Mortgages"],
@@ -383,6 +385,57 @@ def add_action_note(action_id: int, body: NoteCreate):
         note = {"id": next(_ids), "text": body.text, "created": TODAY}
         ACTION_NOTES.setdefault(action_id, []).insert(0, note)
     return note
+
+
+@app.get("/api/clients/{client_id}/prep")
+def meeting_prep(client_id: int):
+    """Meeting Prep Pack — everything a CA needs before walking into the room."""
+    c = require_client(client_id)
+    open_opps = [o for o in OPPORTUNITIES if o["client_id"] == client_id and o["status"] != "Closed"]
+    insights = [i for i in build_insights() if i["client_id"] == client_id]
+
+    talking_points = []
+    if c["last_interaction_days"] >= 90:
+        talking_points.append("Re-establish contact — acknowledge the gap since the last touch-point.")
+    cash_pct = c["allocation"].get("Cash", 0)
+    if cash_pct >= 15:
+        talking_points.append(f"Discuss deploying the {cash_pct}% cash position.")
+    if c["nnm_ytd_musd"] < 0:
+        talking_points.append("Address YTD outflows and confirm the client's plans.")
+    for o in open_opps:
+        talking_points.append(f"Advance '{o['title']}' ({o['product']}, ${o['estimated_value_musd']}M).")
+    if c["share_of_wallet_pct"] < 30:
+        talking_points.append(f"Share of wallet is {c['share_of_wallet_pct']}% — explore consolidating external assets.")
+    if not talking_points:
+        talking_points.append("Standard relationship review — performance, goals, upcoming needs.")
+
+    return {
+        "client": {k: c[k] for k in ("id", "name", "segment", "booking_location", "domicile",
+                                     "aum_musd", "share_of_wallet_pct", "engagement_score",
+                                     "last_interaction_days", "tags")},
+        "talking_points": talking_points,
+        "open_opportunities": open_opps,
+        "recent_interactions": [i for i in ENGAGEMENT["interactions"] if i["client_id"] == client_id][:5],
+        "news": [n for n in NEWS if n["client_id"] == client_id],
+        "notes": CLIENT_NOTES.get(client_id, [])[:5],
+        "insights": insights,
+    }
+
+
+@app.get("/api/notifications")
+def notifications():
+    return {
+        "items": NOTIFICATIONS,
+        "unread": sum(1 for n in NOTIFICATIONS if not n["read"]),
+    }
+
+
+@app.post("/api/notifications/read")
+def mark_notifications_read():
+    with DATA_LOCK:
+        for n in NOTIFICATIONS:
+            n["read"] = True
+    return {"unread": 0}
 
 
 @app.get("/api/search")

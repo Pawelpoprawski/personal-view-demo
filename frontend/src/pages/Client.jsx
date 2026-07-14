@@ -4,6 +4,7 @@ import { useFetch, PageStatus } from '../useFetch.jsx'
 import Sparkline from '../components/Sparkline.jsx'
 import ScoreDots from '../components/ScoreDots.jsx'
 import Notes from '../components/Notes.jsx'
+import PrepPack from '../components/PrepPack.jsx'
 
 function Yoy({ value, suffix = '%' }) {
   if (value === undefined) return null
@@ -55,6 +56,7 @@ function Tags({ clientId, tags: initial }) {
 export default function Client({ clientId }) {
   const fetcher = useCallback(() => fetchClient(clientId), [clientId])
   const { data, error, reload } = useFetch(fetcher)
+  const [showPrep, setShowPrep] = useState(false)
 
   if (!data) return <main className="content"><PageStatus error={error} reload={reload} /></main>
 
@@ -70,6 +72,9 @@ export default function Client({ clientId }) {
           </p>
         </div>
         <div className="client-head-right">
+          <button type="button" className="btn-primary no-print" onClick={() => setShowPrep(true)}>
+            Prepare meeting
+          </button>
           <button type="button" className="btn-outline no-print" onClick={() => window.print()}>
             Print one-pager
           </button>
@@ -178,6 +183,8 @@ export default function Client({ clientId }) {
         <div className="panel-head"><h2>Notes</h2></div>
         <Notes notes={data.notes} onAdd={(text) => addClientNote(data.id, text)} />
       </section>
+
+      {showPrep && <PrepPack clientId={data.id} onClose={() => setShowPrep(false)} />}
     </main>
   )
 }

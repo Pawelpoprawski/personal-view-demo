@@ -4,6 +4,7 @@ import { useFetch, PageStatus } from '../useFetch.jsx'
 import Sparkline from '../components/Sparkline.jsx'
 import Modal from '../components/Modal.jsx'
 import Notes from '../components/Notes.jsx'
+import PrepPack from '../components/PrepPack.jsx'
 
 function NewActionModal({ clients, onClose, onCreated }) {
   const [form, setForm] = useState({ title: '', client_id: clients[0]?.id, detail: '', due: '', priority: 'medium' })
@@ -114,6 +115,7 @@ export default function Home({ onNavigate, onOpenClient }) {
   const { data: fetched, error, reload } = useFetch(fetchHome)
   const [data, setData] = useState(null)
   const [showNew, setShowNew] = useState(false)
+  const [prepFor, setPrepFor] = useState(null)
 
   useEffect(() => { setData(fetched) }, [fetched])
 
@@ -178,7 +180,33 @@ export default function Home({ onNavigate, onOpenClient }) {
         </div>
       </div>
 
-      <Talk2GFIW insights={data.insights} onOpenClient={onOpenClient} />
+      <div className="home-grid home-grid-top">
+        <Talk2GFIW insights={data.insights} onOpenClient={onOpenClient} />
+
+        <section className="panel">
+          <div className="panel-head"><h2>Upcoming Meetings</h2></div>
+          {data.meetings.map((m) => (
+            <article key={m.id} className="meeting-item">
+              <div className="meeting-when">
+                <span className="meeting-date">{m.date.slice(5)}</span>
+                <span className="meeting-time">{m.time}</span>
+              </div>
+              <div className="meeting-main">
+                <div className="news-headline">{m.subject}</div>
+                <div className="news-meta">
+                  <button type="button" className="client-link" onClick={() => onOpenClient(m.client_id, m.client_name)}>
+                    {m.client_name}
+                  </button>
+                  {' '}· {m.location}
+                </div>
+              </div>
+              <button type="button" className="btn-outline" onClick={() => setPrepFor(m.client_id)}>
+                Prep pack
+              </button>
+            </article>
+          ))}
+        </section>
+      </div>
 
       <div className="home-grid">
         <section className="panel">
@@ -235,6 +263,7 @@ export default function Home({ onNavigate, onOpenClient }) {
       </div>
 
       {showNew && <NewActionModal clients={data.clients} onClose={() => setShowNew(false)} onCreated={onCreated} />}
+      {prepFor && <PrepPack clientId={prepFor} onClose={() => setPrepFor(null)} />}
     </main>
   )
 }

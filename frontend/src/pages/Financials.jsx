@@ -49,21 +49,32 @@ const COLUMNS = [
 export default function Financials({ onOpenClient }) {
   const { data, error, reload } = useFetch(fetchFinancials)
   const [sort, setSort] = useState({ key: 'aum_musd', dir: -1 })
+  const [segment, setSegment] = useState('All')
+  const [location, setLocation] = useState('All')
+  const [query, setQuery] = useState('')
 
   const rows = useMemo(() => {
     if (!data) return []
-    const rs = [...data.clients]
+    const q = query.trim().toLowerCase()
+    const rs = data.clients.filter((c) =>
+      (segment === 'All' || c.segment === segment) &&
+      (location === 'All' || c.booking_location === location) &&
+      (!q || c.name.toLowerCase().includes(q))
+    )
     rs.sort((a, b) => {
       const va = a[sort.key], vb = b[sort.key]
       const cmp = typeof va === 'string' ? va.localeCompare(vb) : va - vb
       return cmp * sort.dir
     })
     return rs
-  }, [data, sort])
+  }, [data, sort, segment, location, query])
 
   if (!data) return <main className="content"><PageStatus error={error} reload={reload} /></main>
 
   const months = data.history.map((h) => h.month)
+  const avgSow = Math.round(
+    data.clients.reduce((s, c) => s + c.share_of_wallet_pct, 0) / data.clients.length
+  )
 
   function toggleSort(key) {
     setSort((s) => (s.key === key ? { key, dir: -s.dir } : { key, dir: -1 }))
@@ -129,7 +140,28 @@ export default function Financials({ onOpenClient }) {
       </div>
 
       <section className="panel">
-        <div className="panel-head"><h2>Per Client</h2></div>
+        <div className="panel-head">
+          <h2>Per Client</h2>
+          <div className="table-filters">
+            <input
+              className="cell-input"
+              placeholder="Search client…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Filter by client name"
+            />
+            <select className="cell-input" value={segment} onChange={(e) => setSegment(e.target.value)}
+                    aria-label="Filter by segment">
+              <option>All</option>
+              {[...new Set(data.clients.map((c) => c.segment))].map((s) => <option key={s}>{s}</option>)}
+            </select>
+            <select className="cell-input" value={location} onChange={(e) => setLocation(e.target.value)}
+                    aria-label="Filter by booking location">
+              <option>All</option>
+              {[...new Set(data.clients.map((c) => c.booking_location))].map((l) => <option key={l}>{l}</option>)}
+            </select>
+          </div>
+        </div>
         <table className="data-table">
           <thead>
             <tr>
@@ -155,7 +187,13 @@ export default function Financials({ onOpenClient }) {
                 </td>
                 <td>{c.segment}</td>
                 <td className="num">{c.aum_musd.toFixed(1)}</td>
-                <td className="num">{c.share_of_wallet_pct}%</td>
+                <td className="num sow-cell">
+                  <span className="sow-bar-wrap" title={`Book average: ${avgSow}%`}>
+                    <span className="sow-bar" style={{ width: `${c.share_of_wallet_pct}%` }} />
+                    <span className="sow-avg" style={{ left: `${avgSow}%` }} />
+                  </span>
+                  {c.share_of_wallet_pct}%
+                </td>
                 <td className="num">{c.revenue_ytd_kusd}</td>
                 <td className={`num ${c.nnm_ytd_musd < 0 ? 'neg' : 'pos'}`}>{c.nnm_ytd_musd.toFixed(1)}</td>
                 <td className="num">{c.loans_musd.toFixed(1)}</td>

@@ -128,3 +128,24 @@ def test_client_tags_and_notes():
     assert any(x["text"] == "client note" for x in body["notes"])
     assert len(body["history"]) == 12
     assert "aum_yoy_pct" in body["yoy"]
+
+
+def test_home_has_meetings():
+    body = client.get("/api/home").json()
+    assert len(body["meetings"]) >= 3
+    assert all("client_name" in m for m in body["meetings"])
+
+
+def test_prep_pack():
+    body = client.get("/api/clients/3/prep").json()
+    assert body["client"]["name"] == "James Brown"
+    assert len(body["talking_points"]) >= 1
+    assert client.get("/api/clients/999/prep").status_code == 404
+
+
+def test_notifications_mark_read():
+    before = client.get("/api/notifications").json()
+    assert before["unread"] >= 0
+    client.post("/api/notifications/read")
+    after = client.get("/api/notifications").json()
+    assert after["unread"] == 0

@@ -5,6 +5,8 @@ import Engagement from './pages/Engagement.jsx'
 import Opportunities from './pages/Opportunities.jsx'
 import Client from './pages/Client.jsx'
 import SearchBox from './components/SearchBox.jsx'
+import Notifications from './components/Notifications.jsx'
+import TalkWidget from './components/TalkWidget.jsx'
 
 const PAGES = ['Home', 'My Financials', 'My Engagement', 'My Opportunities']
 
@@ -14,7 +16,7 @@ export default function App() {
   const [client, setClient] = useState(null)
 
   useEffect(() => {
-    const title = client ? client.name : page
+    const title = client ? client.name || 'Client' : page
     document.title = title === 'Home' ? 'Insights Platform' : `${title} · Insights Platform`
   }, [page, client])
 
@@ -30,24 +32,29 @@ export default function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <div className="brand">
-          <span className="brand-mark" />
-          <span className="brand-name">Insights Platform</span>
+        <div className="topbar-left">
+          <div className="brand">
+            <span className="brand-mark" />
+            <span className="brand-name">Insights Platform</span>
+          </div>
+          <nav className="mainnav">
+            {PAGES.map((p) => (
+              <button
+                key={p}
+                type="button"
+                className={`nav-link ${p === page && !client ? 'nav-link-active' : ''}`}
+                onClick={() => navigate(p)}
+              >
+                {p}
+              </button>
+            ))}
+          </nav>
         </div>
-        <nav className="mainnav">
-          {PAGES.map((p) => (
-            <button
-              key={p}
-              type="button"
-              className={`nav-link ${p === page && !client ? 'nav-link-active' : ''}`}
-              onClick={() => navigate(p)}
-            >
-              {p}
-            </button>
-          ))}
-        </nav>
-        <div className="userbox">
+        <div className="topbar-center">
           <SearchBox onOpenClient={openClient} onNavigate={navigate} />
+        </div>
+        <div className="userbox">
+          <Notifications onOpenClient={openClient} />
           <span className="avatar">JM</span>
         </div>
       </header>
@@ -64,7 +71,7 @@ export default function App() {
                 </>
               )}
               <span className="crumb-sep">›</span>
-              <span className="crumb-current">{client.name}</span>
+              <span className="crumb-current">{client.name || 'Client'}</span>
             </>
           ) : (
             <>
@@ -85,6 +92,8 @@ export default function App() {
           {page === 'My Opportunities' && <Opportunities onOpenClient={openClient} />}
         </>
       )}
+
+      <TalkWidget context={client?.name || ''} />
     </div>
   )
 }

@@ -648,3 +648,235 @@ button { font-family: var(--body); }
   .panel, .data-tile, .opp-panel { border-color: #bbb; box-shadow: none; }
   .two-col, .home-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* ---------------- Topbar layout (search centered) ---------------- */
+
+.topbar-left { display: flex; align-items: center; gap: 24px; min-width: 0; }
+.topbar-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+}
+.topbar-center .searchbox { margin-right: 0; width: 100%; max-width: 420px; }
+.topbar-center .searchbox input { width: 100%; background: var(--grey-bg); border-radius: 999px; padding: 8px 18px; }
+.topbar-center .searchbox input:focus { background: var(--white); }
+.topbar-center .search-results { left: 0; right: 0; width: auto; }
+.userbox { gap: 14px; }
+
+/* ---------------- Notifications ---------------- */
+
+.notif { position: relative; }
+.notif-bell {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--grey-70);
+  padding: 6px;
+  display: flex;
+}
+.notif-bell:hover { color: var(--ink); }
+.notif-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--red);
+  color: var(--white);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 15px;
+  height: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+.notif-list {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  width: 360px;
+  max-height: 420px;
+  overflow-y: auto;
+  background: var(--white);
+  border: 1px solid var(--grey-line);
+  box-shadow: 0 8px 24px rgba(28, 28, 28, 0.12);
+  z-index: 30;
+}
+.notif-item {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--grey-line);
+}
+.notif-unread { background: #fdf6f6; }
+.notif-kind { font-size: 11px; margin-top: 2px; }
+.notif-opportunity { color: var(--green); }
+.notif-compliance { color: var(--red); }
+.notif-market { color: var(--gold); }
+.notif-engagement { color: var(--red-deep); }
+.notif-news { color: var(--grey-40); }
+.notif-text { font-size: 13px; }
+.notif-meta { font-size: 11px; color: var(--grey-40); margin-top: 3px; }
+
+/* ---------------- Meetings ---------------- */
+
+.home-grid-top { margin-bottom: 0; }
+.home-grid-top .talk-panel { margin-bottom: 0; }
+.meeting-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-top: 1px solid var(--grey-line);
+  padding: 11px 0;
+}
+.meeting-when {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 52px;
+  border: 1px solid var(--grey-line);
+  padding: 5px 6px;
+}
+.meeting-date { font-size: 11px; color: var(--grey-50); }
+.meeting-time { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.meeting-main { flex: 1; min-width: 0; }
+
+/* ---------------- Prep pack ---------------- */
+
+.prep-client { border-bottom: 1px solid var(--grey-line); padding-bottom: 12px; }
+.prep-stats { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--grey-50); margin: 8px 0; }
+.prep-h {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--grey-50);
+  margin: 16px 0 6px;
+}
+.prep-points { margin: 0; padding-left: 18px; font-size: 13px; }
+.prep-points li { margin: 5px 0; }
+.prep-line { font-size: 13px; margin: 5px 0; color: var(--grey-70); }
+.prep .btn-outline { margin-top: 16px; }
+
+/* ---------------- Talk2GFIW widget ---------------- */
+
+.talk-fab {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--red);
+  color: var(--white);
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(218, 0, 0, 0.35);
+  z-index: 50;
+}
+.talk-fab:hover { background: var(--red-deep); }
+.talk-widget {
+  position: fixed;
+  right: 22px;
+  bottom: 82px;
+  width: 360px;
+  max-width: calc(100vw - 44px);
+  background: var(--white);
+  border: 1px solid var(--grey-line);
+  box-shadow: 0 12px 32px rgba(28, 28, 28, 0.18);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+}
+.talk-widget-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--ink);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 13px;
+}
+.talk-widget-head .modal-close { color: var(--white); }
+.talk-widget-body { padding: 12px 14px; max-height: 300px; overflow-y: auto; }
+.talk-hint { font-size: 12px; color: var(--grey-50); margin: 0; }
+.talk-widget-form { padding: 0 14px 12px; margin: 0; }
+
+/* ---------------- Share of Wallet benchmark ---------------- */
+
+.sow-cell { min-width: 130px; }
+.sow-bar-wrap {
+  position: relative;
+  display: inline-block;
+  width: 64px;
+  height: 8px;
+  background: var(--grey-line);
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.sow-bar { position: absolute; left: 0; top: 0; bottom: 0; background: var(--red); }
+.sow-avg {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: var(--ink);
+}
+
+/* ---------------- Table filters ---------------- */
+
+.table-filters { display: flex; gap: 8px; }
+.table-filters .cell-input { width: auto; min-width: 0; }
+.table-filters input.cell-input { width: 160px; }
+
+/* ---------------- Kanban ---------------- */
+
+.filters-split { display: flex; justify-content: space-between; align-items: center; }
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+.kanban-col {
+  background: var(--grey-bg);
+  border: 1px dashed var(--grey-line);
+  padding: 10px;
+  min-height: 220px;
+}
+.kanban-over { border-color: var(--red); background: #fdf3f3; }
+.kanban-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.kanban-card {
+  background: var(--white);
+  border: 1px solid var(--grey-line);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  cursor: grab;
+  position: relative;
+}
+.kanban-card:active { cursor: grabbing; }
+.kanban-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.kanban-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+.kanban-value { font-size: 15px; font-weight: 300; font-variant-numeric: tabular-nums; }
+.kanban-edit { padding: 3px 9px; font-size: 11px; margin-top: 8px; }
+
+@media (max-width: 860px) {
+  .topbar { flex-wrap: wrap; height: auto; padding: 8px 16px; }
+  .topbar-center { order: 3; width: 100%; padding: 8px 0 4px; }
+  .kanban { grid-template-columns: 1fr; }
+  .filters-split { flex-direction: column; align-items: flex-start; gap: 8px; }
+}

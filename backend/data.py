@@ -227,3 +227,30 @@ CLIENT_YOY = {
     4: {"aum_yoy_pct": 28.4, "revenue_yoy_pct": 22.9, "sow_yoy_pp": 8,  "nnm_prev_musd": 0.7},
     5: {"aum_yoy_pct": 0.9,  "revenue_yoy_pct": -1.5, "sow_yoy_pp": 0,  "nnm_prev_musd": 1.3},
 }
+
+
+# Upcoming meetings (landing page)
+MEETINGS = [
+    {"id": 1, "client_id": 3, "date": "2026-07-15", "time": "09:30",
+     "subject": "Portfolio catch-up after 90-day gap", "location": "Office, Zurich"},
+    {"id": 2, "client_id": 1, "date": "2026-07-16", "time": "14:00",
+     "subject": "Q2 portfolio review", "location": "Video call"},
+    {"id": 3, "client_id": 4, "date": "2026-07-17", "time": "11:00",
+     "subject": "Private equity feeder — next steps", "location": "Client office, London"},
+    {"id": 4, "client_id": 2, "date": "2026-07-21", "time": "10:00",
+     "subject": "Lombard proposal walkthrough", "location": "Office, Geneva"},
+]
+
+# Notifications (bell dropdown)
+NOTIFICATIONS = [
+    {"id": 1, "date": "2026-07-14", "kind": "opportunity",
+     "text": "New opportunity assigned to you: 'AI thematic basket' (John Smith).", "client_id": 1, "read": False},
+    {"id": 2, "date": "2026-07-14", "kind": "compliance",
+     "text": "KYC periodic review due for Robert Wilson by 30 Jul.", "client_id": 5, "read": False},
+    {"id": 3, "date": "2026-07-13", "kind": "market",
+     "text": "Market alert: technology sector -3.2% this week — 2 clients with elevated exposure.", "client_id": None, "read": False},
+    {"id": 4, "date": "2026-07-12", "kind": "engagement",
+     "text": "James Brown has had no contact for 90+ days.", "client_id": 3, "read": True},
+    {"id": 5, "date": "2026-07-11", "kind": "news",
+     "text": "Smith Industries announces acquisition of a robotics startup.", "client_id": 1, "read": True},
+]

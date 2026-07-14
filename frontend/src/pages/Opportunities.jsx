@@ -97,6 +97,8 @@ export default function Opportunities({ onOpenClient }) {
   const [filter, setFilter] = useState('All')
   const [showNew, setShowNew] = useState(false)
   const [editing, setEditing] = useState(null)
+  const [view, setView] = useState('List')
+  const [dragOver, setDragOver] = useState(null)
 
   useEffect(() => { setData(fetched) }, [fetched])
 
@@ -145,20 +147,85 @@ export default function Opportunities({ onOpenClient }) {
         </div>
       </div>
 
-      <div className="filters">
-        {['All', ...data.statuses].map((s) => (
-          <button
-            key={s}
-            type="button"
-            className={`filter-pill ${filter === s ? 'filter-active' : ''}`}
-            onClick={() => setFilter(s)}
-          >
-            {s}
-          </button>
-        ))}
+      <div className="filters filters-split">
+        <div className="filters">
+          {['All', ...data.statuses].map((s) => (
+            <button
+              key={s}
+              type="button"
+              className={`filter-pill ${filter === s ? 'filter-active' : ''}`}
+              onClick={() => setFilter(s)}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+        <div className="filters">
+          {['List', 'Board'].map((v) => (
+            <button
+              key={v}
+              type="button"
+              className={`filter-pill ${view === v ? 'filter-active' : ''}`}
+              onClick={() => setView(v)}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {shown.map((o) => (
+      {view === 'Board' && (
+        <div className="kanban">
+          {data.statuses.map((s) => {
+            const cards = data.opportunities.filter((o) => o.status === s)
+            return (
+              <div
+                key={s}
+                className={`kanban-col ${dragOver === s ? 'kanban-over' : ''}`}
+                onDragOver={(e) => { e.preventDefault(); setDragOver(s) }}
+                onDragLeave={() => setDragOver(null)}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  setDragOver(null)
+                  const id = Number(e.dataTransfer.getData('text/plain'))
+                  const o = data.opportunities.find((x) => x.id === id)
+                  if (o && o.status !== s) setStatus(o, s)
+                }}
+              >
+                <div className="kanban-head">
+                  <span className={`status-tag status-${s.replace(' ', '-').toLowerCase()}`}>{s}</span>
+                  <span className="panel-meta">
+                    {cards.length} · ${Math.round(cards.reduce((sum, o) => sum + Number(o.estimated_value_musd), 0) * 10) / 10}M
+                  </span>
+                </div>
+                {cards.map((o) => (
+                  <article
+                    key={o.id}
+                    className="kanban-card"
+                    draggable
+                    onDragStart={(e) => e.dataTransfer.setData('text/plain', String(o.id))}
+                  >
+                    <div className="kanban-title">{o.title}</div>
+                    <div className="news-meta">
+                      <button type="button" className="client-link" onClick={() => onOpenClient(o.client_id, o.client_name)}>
+                        {o.client_name}
+                      </button>
+                      {' '}· {o.product}
+                    </div>
+                    <div className="kanban-foot">
+                      <span className="kanban-value">${o.estimated_value_musd}M</span>
+                      <ScoreDots value={o.potential_score} max={10} />
+                    </div>
+                    <button type="button" className="btn-outline kanban-edit" onClick={() => setEditing(o)}>Edit</button>
+                  </article>
+                ))}
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {view === 'List' && shown.map((o) => (
         <article key={o.id} className="opp-panel">
           <div className="opp-head">
             <div>
