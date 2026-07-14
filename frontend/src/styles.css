@@ -1,0 +1,171 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #f4f5f7;
+  color: #1a1a1a;
+}
+
+/* Login */
+.login-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-card {
+  background: #fff;
+  padding: 2rem 2.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  width: 380px;
+}
+.login-card h1 { margin: 0 0 0.25rem; font-size: 1.5rem; }
+.subtitle { color: #666; margin-top: 0; }
+.login-card label { display: block; margin-bottom: 0.9rem; font-size: 0.85rem; color: #444; }
+.login-card input {
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+.btn-primary {
+  width: 100%;
+  padding: 0.6rem;
+  background: #e60000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.btn-primary:disabled { opacity: 0.6; }
+.btn-secondary {
+  padding: 0.35rem 0.8rem;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.error { color: #c00; font-size: 0.85rem; }
+
+/* Role picker */
+.role-card { width: 420px; }
+.role-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 0.7rem;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.role-btn:hover:not(:disabled) {
+  border-color: #e60000;
+  box-shadow: 0 2px 10px rgba(230, 0, 0, 0.12);
+}
+.role-btn-title { display: block; font-size: 1.05rem; font-weight: 600; }
+.role-btn-desc { display: block; font-size: 0.8rem; color: #777; margin-top: 0.15rem; }
+
+/* App */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1a1a1a;
+  color: #fff;
+  padding: 0.7rem 1.5rem;
+}
+.brand { font-weight: 600; font-size: 1.1rem; }
+.userbox { display: flex; align-items: center; gap: 0.8rem; }
+.role-badge {
+  background: #e60000;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+.content { max-width: 1100px; margin: 1.5rem auto; padding: 0 1.5rem; }
+.loading { text-align: center; margin-top: 3rem; color: #666; }
+
+/* KPIs */
+.kpi-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+.kpi {
+  flex: 1;
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.kpi-value { font-size: 1.8rem; font-weight: 600; }
+.kpi-label { color: #666; font-size: 0.85rem; margin-top: 0.2rem; }
+
+/* Tables */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.data-table th, .data-table td { padding: 0.6rem 0.9rem; text-align: left; font-size: 0.9rem; }
+.data-table thead { background: #fafafa; color: #555; }
+.data-table tbody tr { border-top: 1px solid #eee; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.pos { color: #0a7d33; }
+.neg { color: #c00; }
+
+/* Tabs */
+.tabs { display: flex; gap: 0.4rem; margin-bottom: 1rem; }
+.tab {
+  padding: 0.45rem 1rem;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #555;
+}
+.tab-active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+/* Editable cells (Specialist) */
+.cell-input {
+  width: 100%;
+  min-width: 90px;
+  padding: 0.3rem 0.45rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 0.85rem;
+}
+.data-table select {
+  padding: 0.3rem 0.35rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  background: #fff;
+}
+.btn-small {
+  padding: 0.3rem 0.7rem;
+  background: #e60000;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.btn-small:disabled { background: #ccc; cursor: default; }
+.rationale { max-width: 260px; font-size: 0.82rem; color: #555; }
+.total-row { font-weight: 600; background: #fafafa; }
+.flag {
+  background: #fff3e0;
+  color: #b45309;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+}
