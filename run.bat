@@ -1,6 +1,8 @@
 @echo off
-REM One-command deploy: build frontend, install backend deps, serve everything on port 8000.
+REM One-command deploy: build frontend, install backend deps, serve everything on one port.
+REM Override the port with:  set PORT=8888 ^& run.bat
 cd /d "%~dp0"
+if "%PORT%"=="" set PORT=8000
 
 echo == Building frontend ==
 cd frontend
@@ -11,9 +13,9 @@ cd ..
 echo == Installing backend deps ==
 pip install -r backend\requirements.txt || goto :error
 
-echo == Starting app on http://127.0.0.1:8000 ==
+echo == Starting app on http://127.0.0.1:%PORT% ==
 cd backend
-python -m uvicorn main:app --host 0.0.0.0 --port 8000
+python -m uvicorn main:app --host 0.0.0.0 --port %PORT%
 goto :eof
 
 :error
