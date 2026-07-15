@@ -3,7 +3,7 @@
 # Override the port with:  PORT=8888 ./run.sh
 set -e
 cd "$(dirname "$0")"
-PORT="${PORT:-8000}"
+PORT="${PORT:-8888}"
 
 echo "== Building frontend =="
 cd frontend

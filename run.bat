@@ -2,7 +2,7 @@
 REM One-command deploy: build frontend, install backend deps, serve everything on one port.
 REM Override the port with:  set PORT=8888 ^& run.bat
 cd /d "%~dp0"
-if "%PORT%"=="" set PORT=8000
+if "%PORT%"=="" set PORT=8888
 
 echo == Building frontend ==
 cd frontend
