@@ -1,12 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { talk } from '../api.js'
 
-/** Floating Talk2GFIW assistant, available on every page. */
+/** Talk2GFIW assistant — opened from the "Talk to UGiP" button in the header. */
 export default function TalkWidget({ context }) {
   const [open, setOpen] = useState(false)
   const [thread, setThread] = useState([])
   const [q, setQ] = useState('')
   const [busy, setBusy] = useState(false)
+
+  useEffect(() => {
+    const openTalk = () => setOpen(true)
+    window.addEventListener('insights:open-talk', openTalk)
+    return () => window.removeEventListener('insights:open-talk', openTalk)
+  }, [])
 
   async function ask(e) {
     e.preventDefault()
@@ -56,14 +62,6 @@ export default function TalkWidget({ context }) {
           </form>
         </div>
       )}
-      <button
-        type="button"
-        className="talk-fab no-print"
-        onClick={() => setOpen((o) => !o)}
-        aria-label="Open Talk2GFIW assistant"
-      >
-        ✦
-      </button>
     </>
   )
 }

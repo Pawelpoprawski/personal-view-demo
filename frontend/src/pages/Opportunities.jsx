@@ -127,7 +127,7 @@ export default function Opportunities({ onOpenClient }) {
     <main className="content">
       <div className="page-head">
         <h1 className="page-title">My Opportunities</h1>
-        <button type="button" className="btn-primary" onClick={() => setShowNew(true)}>+ New Opportunity</button>
+        <button type="button" className="btn-red" onClick={() => setShowNew(true)}>+ New Opportunity</button>
       </div>
 
       <div className="tile-row">
